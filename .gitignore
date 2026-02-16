@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.pytest_cache/
+.venv/
+derivatives/
+reports/figures/*
+reports/tables/*
+!reports/figures/.gitkeep
+!reports/tables/.gitkeep

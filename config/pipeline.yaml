@@ -1,0 +1,89 @@
+project:
+  name: unified_fmri_pipeline
+  random_seed: 42
+  n_jobs: 4
+  debug_mode: false
+  debug_subject_limit: null
+
+paths:
+  bids_roots:
+    schizconnect: /Users/rahul.pradhan/AppDev/Schizo/fMRI/data/schizconnect
+  derivatives_root: /Users/rahul.pradhan/AppDev/Schizo/fMRI/derivatives
+  phenotypic_tsv: /Users/rahul.pradhan/AppDev/Schizo/fMRI/BDI/phenotypic.tsv
+  output_root: /Users/rahul.pradhan/AppDev/Schizo/fMRI/derivatives/metrics
+  cache_dir: /Users/rahul.pradhan/AppDev/Schizo/fMRI/derivatives/cache
+  logs_dir: /Users/rahul.pradhan/AppDev/Schizo/fMRI/derivatives/logs
+
+bids:
+  space: MNI152NLin2009cAsym
+  desc_preproc: preproc
+  use_aroma: false
+  task_rest: removal
+  task_movie: movie
+
+preprocessing:
+  confounds:
+    include_wm_csf: true
+    wm_columns: ["white_matter", "wm"]
+    csf_columns: ["csf"]
+  scrubbing:
+    fd_threshold_mm: 0.5
+    exclude_percent_censored: 0.20
+    exclude_max_motion_mm: 3.0
+    exclude_max_rotation_deg: 3.0
+  filtering:
+    low_hz: 0.01
+    high_hz: 0.10
+  smoothing_fwhm_mm: 6.0
+
+roi:
+  atlas: schaefer_200
+  schaefer_n_rois: 200
+  schaefer_yeo_networks: 7
+  standardize: zscore_sample
+
+reho:
+  neighborhood: 26
+  normalize_zscore: true
+  chunk_size_voxels: 10000
+
+dynamic_fc:
+  window_trs: 30
+  step_trs: 5
+  exploratory_clustering: false
+  exploratory_clusters: 4
+
+ica:
+  n_components: 20
+  max_iter: 500
+  corr_match_threshold: 0.2
+
+pca:
+  n_components: 5
+
+isc:
+  permutations: 1000
+  min_subjects: 4
+  use_circular_shift_null: true
+  random_state: 42
+
+stats:
+  diagnosis_column: group
+  patient_label: patient
+  control_label: control
+  covariates: ["age", "mean_fd"]
+  optional_covariates_if_available: ["sex", "site"]
+  fdr_q: 0.05
+
+execution:
+  run_order:
+    - ingest
+    - preprocess_qc
+    - roi_timeseries
+    - reho
+    - static_fc
+    - dynamic_fc
+    - ica
+    - pca
+    - isc
+    - group_stats
