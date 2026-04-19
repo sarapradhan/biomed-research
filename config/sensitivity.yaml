@@ -1,0 +1,57 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# sensitivity.yaml
+#
+# Configuration for the robustness benchmark / sensitivity analysis.
+# Used by scripts/run_sensitivity_analysis.py to test which pipeline outputs
+# are stable under reasonable alternative preprocessing choices.
+#
+# This config defines the BASELINE parameters. The sensitivity script
+# automatically generates variations (one-at-a-time) around this baseline.
+#
+# Usage:
+#   python scripts/run_sensitivity_analysis.py \
+#       --data-root ~/fmri-pipeline-data \
+#       --output-root ~/fmri-pipeline-data/pipeline_output
+#
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Baseline parameters (from the validated Lumiere paper)
+baseline:
+  gsr: true                    # Global signal regression on
+  schaefer_n_rois: 200         # Schaefer-200 parcellation
+  dfc_window_trs: 30           # 30-TR sliding window for dynamic FC
+  fd_threshold_mm: 0.5         # 0.5 mm framewise displacement threshold
+  smoothing_fwhm_mm: 6.0       # 6 mm FWHM Gaussian smoothing kernel
+
+# Parameter variations — each dimension is varied independently from baseline
+variations:
+  gsr:
+    values: [true, false]
+    description: "Global signal regression: reduces global noise but introduces mathematical negative bias"
+
+  schaefer_n_rois:
+    values: [100, 200, 400]
+    description: "Parcellation granularity: coarser (100) vs finer (400) cortical divisions"
+
+  dfc_window_trs:
+    values: [20, 30, 45, 60]
+    description: "Dynamic FC window size: shorter captures fast dynamics, longer averages more signal"
+
+  fd_threshold_mm:
+    values: [0.3, 0.5, 0.9]
+    description: "Motion scrubbing aggressiveness: stricter (0.3) discards more data, lenient (0.9) keeps noisy frames"
+
+  smoothing_fwhm_mm:
+    values: [4.0, 6.0, 8.0]
+    description: "Spatial smoothing: less (4mm) preserves fine structure, more (8mm) increases SNR"
+
+# Stability assessment thresholds
+stability_thresholds:
+  robust: 0.98      # Spearman r > 0.98 = robust (negligible change)
+  moderate: 0.95    # 0.95 < r < 0.98 = moderate sensitivity
+  fragile: 0.0      # r < 0.95 = fragile (materially different)
+
+# Dataset paths — update these to match your local fMRIPrep derivatives location
+paths:
+  data_root: ~/fmri-pipeline-data
+  output_root: ~/fmri-pipeline-data/pipeline_output

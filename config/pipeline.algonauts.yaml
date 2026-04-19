@@ -1,0 +1,132 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# pipeline.algonauts.yaml
+#
+# Configuration for the CNeuroMod Friends naturalistic movie-viewing analysis
+# (Algonauts-compatible subset). This is the config used for the pilot study
+# reported in "Building a Reproducible Pipeline for Functional Brain Network
+# Analysis During Naturalistic Movie Viewing."
+#
+# Usage:
+#   python scripts/run_pipeline.py --config config/pipeline.algonauts.yaml
+#
+# Data requirements:
+#   - BIDS-formatted CNeuroMod Friends dataset at paths.bids_roots.algonauts
+#   - fMRIPrep derivatives under paths.derivatives_root/algonauts/fmriprep/
+#   - Optional: phenotypic.tsv with subject metadata (age, sex, etc.)
+#
+# To replicate the pilot: set debug_mode: false and ensure the five CNeuroMod
+# Friends runs are present in the derivatives directory.
+# ─────────────────────────────────────────────────────────────────────────────
+
+project:
+  name: algonauts_friends_pilot
+  random_seed: 42
+  n_jobs: 4
+  debug_mode: false
+  debug_subject_limit: null
+
+paths:
+  bids_roots:
+    # CNeuroMod Friends dataset (Algonauts-compatible subset).
+    # Update this path to point to your local copy of the BIDS-formatted data.
+    algonauts: /path/to/cneuromod/friends/bids
+  derivatives_root: /path/to/cneuromod/friends/derivatives
+  # Optional TSV with subject-level metadata (age, sex). Leave as-is if absent.
+  phenotypic_tsv: /path/to/cneuromod/friends/phenotypic.tsv
+  output_root: /path/to/cneuromod/friends/derivatives/metrics
+  cache_dir: /path/to/cneuromod/friends/derivatives/cache
+  logs_dir: /path/to/cneuromod/friends/derivatives/logs
+
+bids:
+  space: MNI152NLin2009cAsym
+  desc_preproc: preproc
+  # Set to true if fMRIPrep was run with --use-aroma (ICA-AROMA denoising).
+  # CNeuroMod derivatives typically include smoothAROMAnonaggr outputs.
+  use_aroma: true
+  # task_rest is unused for this naturalistic dataset (no resting-state runs).
+  # Set to a label that will not match any BOLD file so it is safely skipped.
+  task_rest: __unused__
+  # BIDS task label for the Friends movie runs in the CNeuroMod derivatives.
+  task_movie: movie
+
+preprocessing:
+  confounds:
+    include_wm_csf: true
+    wm_columns: ["white_matter", "wm"]
+    csf_columns: ["csf"]
+    # Global signal regression (GSR): removes the mean whole-brain signal from
+    # every voxel time series. Recommended for connectivity analyses focused on
+    # relative patterns. Requires bold_file and mask_file to be passed through
+    # load_confound_matrix (handled automatically by pipeline.py).
+    include_global_signal: true
+  scrubbing:
+    # Frame censoring threshold (Power et al. 2012). Volumes with FD > 0.5 mm
+    # are excluded from regression and downstream analyses.
+    fd_threshold_mm: 0.5
+    exclude_percent_censored: 0.20
+    exclude_max_motion_mm: 3.0
+    exclude_max_rotation_deg: 3.0
+  filtering:
+    # Standard resting-state / naturalistic bandpass window (Biswal et al.).
+    low_hz: 0.01
+    high_hz: 0.10
+  smoothing_fwhm_mm: 6.0
+
+roi:
+  atlas: schaefer_200
+  schaefer_n_rois: 200
+  schaefer_yeo_networks: 7
+  standardize: zscore_sample
+
+reho:
+  neighborhood: 26
+  normalize_zscore: true
+  chunk_size_voxels: 10000
+
+dynamic_fc:
+  window_trs: 30
+  step_trs: 5
+  exploratory_clustering: false
+  exploratory_clusters: 4
+
+ica:
+  n_components: 20
+  max_iter: 500
+  corr_match_threshold: 0.2
+
+pca:
+  n_components: 5
+
+isc:
+  # Leave-one-out ISC with circular time-shift permutation null.
+  # With N=4 pilot subjects the permutation null is low-powered; interpret
+  # ISC significance maps with caution at this sample size.
+  permutations: 1000
+  min_subjects: 4
+  use_circular_shift_null: true
+  random_state: 42
+
+# Stats block is included for completeness but group-level diagnosis comparison
+# is NOT run for this naturalistic pilot (no clinical comparison group).
+# Set diagnosis_column to a column that does not exist to disable group stats,
+# or simply do not invoke the group_stats step.
+stats:
+  diagnosis_column: __no_groups__
+  patient_label: __patient__
+  control_label: __control__
+  covariates: ["age", "mean_fd"]
+  optional_covariates_if_available: ["sex", "site"]
+  fdr_q: 0.05
+
+execution:
+  run_order:
+    - ingest
+    - preprocess_qc
+    - roi_timeseries
+    - reho
+    - static_fc
+    - dynamic_fc
+    - ica
+    - pca
+    - isc
+    # group_stats omitted: naturalistic pilot has no diagnosis contrast

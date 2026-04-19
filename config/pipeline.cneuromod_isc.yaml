@@ -1,0 +1,147 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# pipeline.cneuromod_isc.yaml
+#
+# Configuration for the Track 2 ISC Extension: Naturalistic movie-viewing
+# analysis using the CNeuroMod Friends dataset.
+#
+# This config activates the ISC module and scene annotation framework to study
+# intersubject synchrony and dynamic network reconfiguration during naturalistic
+# movie viewing.
+#
+# Scientific question:
+#   When subjects watch the same movie, which brain networks synchronize
+#   reliably, and which reconfigure dynamically over time? Do temporal hotspots
+#   of synchrony align with socially or emotionally salient scene features?
+#
+# Prerequisites:
+#   1. Download CNeuroMod Friends data with fMRIPrep derivatives
+#   2. Update paths below to match your local data location
+#   3. Prepare scene annotation CSVs (see scene_annotation section)
+#
+# Usage:
+#   python scripts/run_pipeline.py --config config/pipeline.cneuromod_isc.yaml
+#
+# ─────────────────────────────────────────────────────────────────────────────
+
+project:
+  name: cneuromod_friends_isc
+  random_seed: 42
+  n_jobs: 4
+  debug_mode: false
+  debug_subject_limit: null
+
+paths:
+  bids_roots:
+    # CNeuroMod Friends data — update this path after downloading
+    algonauts: /path/to/cneuromod/friends
+  derivatives_root: /path/to/cneuromod/derivatives
+  phenotypic_tsv: ""   # CNeuroMod uses participants.tsv in BIDS root
+  output_root: /path/to/output/cneuromod_isc
+  cache_dir: /path/to/output/cneuromod_isc/cache
+  logs_dir: /path/to/output/cneuromod_isc/logs
+
+bids:
+  space: MNI152NLin2009cAsym
+  desc_preproc: preproc
+  use_aroma: false
+  task_rest: __unused__          # No resting-state in this analysis
+  task_movie: friends            # CNeuroMod Friends movie task label
+
+preprocessing:
+  confounds:
+    include_wm_csf: true
+    wm_columns: ["white_matter", "wm"]
+    csf_columns: ["csf"]
+    # GSR on by default for ISC — reduces global noise that could inflate
+    # apparent intersubject synchrony from non-neural sources
+    include_global_signal: true
+  scrubbing:
+    fd_threshold_mm: 0.5
+    exclude_percent_censored: 0.20
+    exclude_max_motion_mm: 3.0
+    exclude_max_rotation_deg: 3.0
+  filtering:
+    low_hz: 0.01
+    high_hz: 0.10
+  smoothing_fwhm_mm: 6.0
+
+roi:
+  atlas: schaefer_200
+  schaefer_n_rois: 200
+  schaefer_yeo_networks: 7
+  standardize: zscore_sample
+
+reho:
+  neighborhood: 26
+  normalize_zscore: true
+  chunk_size_voxels: 10000
+
+dynamic_fc:
+  window_trs: 30
+  step_trs: 5
+  exploratory_clustering: true    # Enable for state analysis
+  exploratory_clusters: 4
+
+ica:
+  n_components: 20
+  max_iter: 500
+  corr_match_threshold: 0.2
+
+pca:
+  n_components: 5
+
+isc:
+  permutations: 1000
+  min_subjects: 4
+  use_circular_shift_null: true
+  random_state: 42
+
+# ── Scene annotation configuration (Track 2 extension) ──────────────────────
+scene_annotation:
+  enabled: true
+
+  # Path to scene annotation CSV files (one per episode)
+  # Each CSV must have columns: onset_sec, offset_sec, and at least one
+  # of the feature columns listed below.
+  # Example: annotations/friends_s01e01_scenes.csv
+  annotation_dir: /path/to/output/cneuromod_isc/annotations
+
+  # TR for converting seconds to volume indices
+  tr_sec: 1.49   # CNeuroMod Friends TR
+
+  # Scene features to track (columns in annotation CSVs)
+  features:
+    - emotional_valence       # -1 (negative) to +1 (positive)
+    - social_cognition        # 0 (no ToM) or 1 (theory-of-mind moment)
+    - narrative_transition    # 0 (within-scene) or 1 (scene boundary)
+
+  # ISC-to-scene alignment parameters
+  alignment:
+    # How to summarize ISC within each scene segment
+    summary_method: mean     # "mean" or "median"
+    # Minimum scene duration in TRs to include in analysis
+    min_scene_trs: 5
+    # Whether to z-score ISC values before correlating with scene features
+    zscore_isc: true
+
+# Group stats not applicable for this dataset (no diagnostic groups)
+stats:
+  diagnosis_column: __no_groups__
+  patient_label: patient
+  control_label: control
+  covariates: ["mean_fd"]
+  optional_covariates_if_available: ["age", "sex"]
+  fdr_q: 0.05
+
+execution:
+  run_order:
+    - ingest
+    - preprocess_qc
+    - roi_timeseries
+    - reho
+    - static_fc
+    - dynamic_fc
+    - ica
+    - pca
+    - isc
+    - scene_alignment     # Track 2 extension step
