@@ -1,0 +1,133 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# pipeline.ds007318.yaml
+#
+# Configuration for OpenNeuro ds007318 (working-memory removal task,
+# Northwest Normal University, 3 subjects, 5 BOLD runs).
+#
+# NOTE: This config is intended for use with the standard run_pipeline.py
+# entry-point, which uses BIDSLayout to discover files.  Because the
+# ds007318 derivative layout does NOT include the expected
+#   <derivatives_root>/schizconnect/fmriprep/
+# sub-directory, you must first create a symlink:
+#
+#   ln -s /path/to/fMRIPrep/derivatives \
+#         /path/to/fMRIPrep/derivatives_bids/schizconnect/fmriprep
+#
+# Then set:
+#   paths.bids_roots.schizconnect: /path/to/fMRIPrep
+#   paths.derivatives_root:        /path/to/fMRIPrep/derivatives_bids
+#
+# ── Preferred alternative ─────────────────────────────────────────────────────
+# Run the standalone pilot runner instead (no symlink required):
+#
+#   python scripts/run_fmriprep_pilot.py \
+#       --data-root /path/to/fMRIPrep \
+#       --output-root /path/to/fMRIPrep/pipeline_output
+#
+# ─────────────────────────────────────────────────────────────────────────────
+
+project:
+  name: ds007318_removal_pilot
+  random_seed: 42
+  n_jobs: 4
+  debug_mode: false
+  debug_subject_limit: null
+
+paths:
+  bids_roots:
+    # Point to the fMRIPrep top-level directory (the one that contains
+    # participants.tsv and the derivatives/ sub-folder).
+    schizconnect: /path/to/fMRIPrep
+  # derivatives_root must resolve to a path where
+  #   <derivatives_root>/schizconnect/fmriprep/  exists and contains sub-XX/ folders.
+  # Create the required symlink first (see note above).
+  derivatives_root: /path/to/fMRIPrep/derivatives_bids
+  phenotypic_tsv: /path/to/fMRIPrep/phenotypic.tsv
+  output_root: /path/to/fMRIPrep/pipeline_output
+  cache_dir: /path/to/fMRIPrep/pipeline_output/cache
+  logs_dir: /path/to/fMRIPrep/pipeline_output/logs
+
+bids:
+  space: MNI152NLin2009cAsym
+  desc_preproc: preproc
+  # This dataset has no ICA-AROMA outputs.
+  use_aroma: false
+  # "removal" is the BIDS task label for this resting-state dataset.
+  task_rest: removal
+  # No naturalistic movie task in this dataset; ISC step will be skipped.
+  task_movie: __unused__
+
+preprocessing:
+  confounds:
+    include_wm_csf: true
+    wm_columns: ["white_matter", "wm"]
+    csf_columns: ["csf"]
+    # Global signal regression. The fMRIPrep confounds TSV already contains
+    # a pre-computed global_signal column; this flag triggers the pipeline to
+    # additionally compute GSR directly from the BOLD data via NiftiMasker.
+    include_global_signal: true
+  scrubbing:
+    fd_threshold_mm: 0.5
+    exclude_percent_censored: 0.20
+    exclude_max_motion_mm: 3.0
+    exclude_max_rotation_deg: 3.0
+  filtering:
+    low_hz: 0.01
+    high_hz: 0.10
+  smoothing_fwhm_mm: 6.0
+
+roi:
+  atlas: schaefer_200
+  schaefer_n_rois: 200
+  schaefer_yeo_networks: 7
+  standardize: zscore_sample
+
+reho:
+  neighborhood: 26
+  normalize_zscore: true
+  chunk_size_voxels: 10000
+
+dynamic_fc:
+  window_trs: 30
+  step_trs: 5
+  exploratory_clustering: false
+  exploratory_clusters: 4
+
+ica:
+  n_components: 20
+  max_iter: 500
+  corr_match_threshold: 0.2
+
+pca:
+  n_components: 5
+
+isc:
+  permutations: 1000
+  min_subjects: 4
+  use_circular_shift_null: true
+  random_state: 42
+  # ISC will be skipped: the run_isc_step() function filters for dataset=="algonauts"
+  # (naturalistic movie data) and this dataset uses dataset=="schizconnect".
+
+# Group stats intentionally disabled: all 3 subjects with derivatives are
+# labelled group=patient in participants.tsv. There is no control comparison.
+stats:
+  diagnosis_column: __no_groups__
+  patient_label: patient
+  control_label: control
+  covariates: ["mean_fd"]
+  optional_covariates_if_available: ["age", "sex", "site"]
+  fdr_q: 0.05
+
+execution:
+  run_order:
+    - ingest
+    - preprocess_qc
+    - roi_timeseries
+    - reho
+    - static_fc
+    - dynamic_fc
+    - ica
+    - pca
+    # isc: omitted — requires naturalistic movie data (dataset=="algonauts")
+    # group_stats: omitted — no control group in this dataset
