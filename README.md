@@ -2,6 +2,8 @@
 
 A modular, YAML-configured Python pipeline for multi-scale functional brain network analysis. Built for naturalistic (movie-viewing) and resting-state fMRI data, validated on independent datasets without code modification.
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/sarapradhan/biomed-research)
+
 ```
                     ┌─────────────────────────────────────────────────┐
                     │           YAML Configuration Layer              │
@@ -157,6 +159,7 @@ The pipeline expects fMRIPrep derivatives organized in BIDS format:
 
 ## Documentation
 
+- **[DeepWiki](https://deepwiki.com/sarapradhan/biomed-research)** — Interactive documentation: architecture, pipeline modules, datasets, and API reference
 - **[Limitations](LIMITATIONS.md)** — Known constraints, scope boundaries, and methodological caveats
 - **[Roadmap](ROADMAP.md)** — Planned extensions and future development
 - **[Project Overview](docs/PROJECT_OVERVIEW.md)** — Scientific motivation and design rationale
