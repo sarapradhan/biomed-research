@@ -1,0 +1,1 @@
+dataset,subject_id,session_id,task,run_id,n_trs,tr_seconds,voxel_size_mm,space,desc,mean_fd_mm,pct_censored,passes_qc,exclusion_reason,notes
