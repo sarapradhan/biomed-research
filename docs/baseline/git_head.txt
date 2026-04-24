@@ -1,0 +1,6 @@
+Baseline commit (origin/main at time of snapshot):
+24140c9a6f26026f2eafd9cc6eb347cc3b1c7f30
+24140c9a6f26026f2eafd9cc6eb347cc3b1c7f30
+Sara Pradhan <pradhan.sara@gmail.com>
+2026-04-18 23:27:08 -0700
+Add DeepWiki badge and documentation link to README
