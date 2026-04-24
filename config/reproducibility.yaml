@@ -1,0 +1,81 @@
+# Configuration for the reproducibility analyses.
+#
+# Consumed by src/fmri_pipeline/reproducibility/*. Kept in the same style
+# as config/pipeline.yaml so the two configs can be loaded side by side.
+
+project:
+  name: reproducibility
+  random_seed: 42
+  n_jobs: 4
+
+paths:
+  # Inputs: derivatives produced by the main pipeline (per-subject, per-run).
+  fc_input_dir: ./derivatives/metrics/connectivity
+  reho_input_dir: ./derivatives/metrics/reho
+  ica_input_dir: ./derivatives/metrics/ica
+  graph_input_dir: ./derivatives/metrics/graph
+  # Outputs: one folder per analysis under reports/reproducibility/.
+  output_root: ./reports/reproducibility
+
+# ---------------------------------------------------------------------------
+# Static FC within-subject vs between-subject similarity
+# ---------------------------------------------------------------------------
+fc:
+  enabled: true
+  match_between_by_run_index: true   # restrict between-subj pairs to same run idx
+  fisher_z_before_tests: true
+  n_bootstrap: 1000                  # for CI on within - between gap
+  test: wilcoxon                     # "wilcoxon" or "ttest"
+  output_csv: fc_within_vs_between.csv
+
+# ---------------------------------------------------------------------------
+# ReHo run-to-run similarity
+# ---------------------------------------------------------------------------
+reho:
+  enabled: true
+  atlas: schaefer_200                # must match main pipeline's ROI atlas
+  fisher_z_before_tests: true
+  include_split_half: false          # set true only if timeseries are available
+  output_matrix: reho_similarity_matrix.npy
+  output_csv: reho_summary.csv
+
+# ---------------------------------------------------------------------------
+# ICA stability across seeds and run subsets
+# ---------------------------------------------------------------------------
+ica:
+  stability:
+    enabled: true
+    n_components: 20                 # must match manuscript's reported K
+    seeds: [1, 2, 3, 4, 5]
+    leave_one_run_out: true
+    robust_threshold: 0.7            # r for "robust" component
+    matching: hungarian              # scipy.optimize.linear_sum_assignment
+    output_seeds_csv: ica_stability_seeds.csv
+    output_lorocv_csv: ica_stability_lorocv.csv
+
+# ---------------------------------------------------------------------------
+# Graph metric stability
+# ---------------------------------------------------------------------------
+graph:
+  stability:
+    enabled: true
+    density_thresholds: [0.10, 0.15, 0.20]
+    primary_threshold: 0.15
+    metrics: [modularity, global_efficiency, clustering]
+    community_algorithm: louvain     # "louvain" or "leiden"
+    n_bootstrap: 500
+    leave_one_run_out: true
+    cv_warning_threshold: 0.20       # flag any metric with CV above this
+    output_csv: graph_metrics_bootstrap.csv
+
+# ---------------------------------------------------------------------------
+# Runtime knobs. Selectively disable analyses to iterate faster.
+# ---------------------------------------------------------------------------
+execution:
+  run_order:
+    - fc
+    - reho
+    - ica
+    - graph
+  continue_on_error: true            # one failing module should not halt others
+  write_manifest: true               # records versions, git sha, config hash
