@@ -117,7 +117,6 @@ biomed-research/
 │   ├── SOFTWARE_ARCHITECTURE.md
 │   └── IMPLEMENTATION_RUNBOOK.md
 ├── LIMITATIONS.md                    # Known constraints and scope
-├── ROADMAP.md                        # Future development plan
 ├── requirements.txt
 └── environment.yml
 ```
@@ -161,7 +160,6 @@ The pipeline expects fMRIPrep derivatives organized in BIDS format:
 
 - **[DeepWiki](https://deepwiki.com/sarapradhan/biomed-research)** — Interactive documentation: architecture, pipeline modules, datasets, and API reference
 - **[Limitations](LIMITATIONS.md)** — Known constraints, scope boundaries, and methodological caveats
-- **[Roadmap](ROADMAP.md)** — Planned extensions and future development
 - **[Project Overview](docs/PROJECT_OVERVIEW.md)** — Scientific motivation and design rationale
 - **[Software Architecture](docs/SOFTWARE_ARCHITECTURE.md)** — Module design and data flow
 - **[Implementation Runbook](docs/IMPLEMENTATION_RUNBOOK.md)** — Step-by-step setup guide
