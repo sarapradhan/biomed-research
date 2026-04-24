@@ -8,3 +8,4 @@ reports/figures/*
 reports/tables/*
 !reports/figures/.gitkeep
 !reports/tables/.gitkeep
+_archive/
