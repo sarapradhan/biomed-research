@@ -1,9 +1,9 @@
 #!/bin/bash
 # ─────────────────────────────────────────────────────────────────────────────
-# Run or replot the Track 1 sensitivity analysis on Sara's Mac
+# Run or replot the Track 1 sensitivity analysis on macOS.
 #
 # Usage:
-#   cd ~/Documents/Claude/Projects/fMRI/code/biomed-research
+#   cd /path/to/biomed-research
 #
 #   # Regenerate figures from saved data (~10 seconds):
 #   bash scripts/run_sensitivity_on_mac.sh --replot-only
@@ -11,14 +11,17 @@
 #   # Full re-run (~30 minutes):
 #   bash scripts/run_sensitivity_on_mac.sh
 #
-# Output: ~/Documents/Claude/Projects/fMRI/fMRIPrep/pipeline_output/sensitivity/
+# Expected layout: $DATA_ROOT/derivatives/ holds the fMRIPrep output.
+# Output is written under $DATA_ROOT/pipeline_output/sensitivity/.
+#
+# Override the default data location by exporting DATA_ROOT before running.
 # ─────────────────────────────────────────────────────────────────────────────
 
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
-DATA_ROOT="$HOME/Documents/Claude/Projects/fMRI/fMRIPrep"
+DATA_ROOT="${DATA_ROOT:-$HOME/fMRIPrep}"
 OUTPUT_ROOT="$DATA_ROOT/pipeline_output"
 
 echo "========================================"
