@@ -61,13 +61,19 @@ def dynamic_fc_summary(roi_ts: np.ndarray, cfg: Dict) -> Tuple[np.ndarray, np.nd
 
 
 def exploratory_window_clustering(mats: List[np.ndarray], cfg: Dict) -> Dict[str, np.ndarray]:
-    """Optional exploratory clustering of window states."""
+    """Optional exploratory clustering of window states.
+
+    Reads the project-wide RNG seed from ``cfg.project.random_seed`` (default
+    42) and forwards it to ``scipy.cluster.vq.kmeans2`` so cluster labels and
+    centroids are reproducible across runs.
+    """
     if not mats:
         return {"labels": np.array([]), "centroids": np.array([])}
     k = int(cfg["dynamic_fc"].get("exploratory_clusters", 4))
+    seed = int(cfg.get("project", {}).get("random_seed", 42))
     triu = np.triu_indices(mats[0].shape[0], k=1)
     x = np.stack([m[triu] for m in mats], axis=0)
-    centroids, labels = kmeans2(x, k, minit="points")
+    centroids, labels = kmeans2(x, k, minit="points", seed=seed)
     return {"labels": labels, "centroids": centroids}
 
 
