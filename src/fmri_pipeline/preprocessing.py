@@ -159,14 +159,13 @@ def preprocess_bold(
     if sample_mask.size < 20:
         raise ValueError("Too few uncensored volumes after scrubbing")
 
-    masker = NiftiMasker(mask_img=mask_file, standardize=False)
-    cleaned_ts = masker.fit_transform(
-        bold_file,
-        confounds=confound_matrix.to_numpy(),
-        sample_mask=sample_mask,
-    )
-
-    clean_masker = NiftiMasker(
+    # Combine confound regression, scrubbing, detrending, and bandpass in a
+    # single nilearn call. When ``sample_mask`` is supplied alongside bandpass
+    # parameters, nilearn.signal.clean interpolates censored frames before
+    # filtering and drops them afterward, avoiding the spectral distortion
+    # caused by bandpassing a temporally non-uniform (post-censoring) series.
+    # See Caballero-Gaudes & Reynolds (2017) and Power et al. (2014).
+    masker = NiftiMasker(
         mask_img=mask_file,
         standardize=False,
         detrend=True,
@@ -174,8 +173,12 @@ def preprocess_bold(
         low_pass=float(filt_cfg["high_hz"]),
         high_pass=float(filt_cfg["low_hz"]),
     )
-    filtered_ts = clean_masker.fit_transform(masker.inverse_transform(cleaned_ts))
-    unsmoothed_img = clean_masker.inverse_transform(filtered_ts)
+    cleaned_ts = masker.fit_transform(
+        bold_file,
+        confounds=confound_matrix.to_numpy(),
+        sample_mask=sample_mask,
+    )
+    unsmoothed_img = masker.inverse_transform(cleaned_ts)
 
     fwhm = float(cfg["preprocessing"]["smoothing_fwhm_mm"])
     smoothed_img = smooth_img(unsmoothed_img, fwhm=fwhm)
