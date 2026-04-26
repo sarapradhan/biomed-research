@@ -40,7 +40,14 @@ A modular, YAML-configured Python pipeline for multi-scale functional brain netw
 ```bash
 conda env create -f environment.yml
 conda activate fmri-unified-pipeline
-pip install -r requirements.txt
+pip install -e .
+```
+
+`pyproject.toml` is the single source of truth for dependencies. `requirements.txt` is an auto-generated, fully pinned lockfile produced by `pip-compile` (from [pip-tools](https://pip-tools.readthedocs.io)) — useful for reproducing an exact environment with `pip install -r requirements.txt`. Do not edit `requirements.txt` by hand; to refresh it after changing `pyproject.toml`, run:
+
+```bash
+pip install pip-tools
+pip-compile --output-file=requirements.txt pyproject.toml
 ```
 
 ### 2. Configure Paths

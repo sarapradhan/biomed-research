@@ -9,3 +9,4 @@ reports/tables/*
 !reports/figures/.gitkeep
 !reports/tables/.gitkeep
 _archive/
+*.egg-info/
