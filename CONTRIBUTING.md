@@ -23,6 +23,20 @@ If you encounter a bug, unexpected behavior, or have a feature request, please o
 5. Update documentation (README, docstrings) if your changes affect usage.
 6. Submit a pull request with a clear description of the changes and their motivation.
 
+### Managing Dependencies
+
+`pyproject.toml` is the single source of truth for runtime dependencies. `requirements.txt` is an auto-generated lockfile produced from `pyproject.toml` by `pip-compile` (pip-tools).
+
+- To add or update a dependency, edit `[project].dependencies` in `pyproject.toml`.
+- Then regenerate the lockfile:
+
+  ```bash
+  pip install pip-tools
+  pip-compile --output-file=requirements.txt pyproject.toml
+  ```
+
+- Commit both `pyproject.toml` and the regenerated `requirements.txt` together. Do not edit `requirements.txt` by hand.
+
 ### Code Style
 
 - Follow PEP 8 conventions.
