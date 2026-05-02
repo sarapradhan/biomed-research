@@ -7,6 +7,7 @@ state clustering of windowed connectivity matrices.
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 from typing import Dict, List, Tuple
 
@@ -14,9 +15,17 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.cluster.vq import kmeans2
 
+logger = logging.getLogger(__name__)
+
 
 def static_fc(roi_ts: np.ndarray) -> np.ndarray:
     """Compute pairwise Pearson correlation and apply Fisher z-transform.
+
+    Constant-variance ROIs (a parcel that is all zeros, or a window in which
+    every sample is identical) yield NaN from ``np.corrcoef`` and would
+    otherwise propagate silently into downstream stats. We detect such ROIs,
+    log a warning, and zero out their rows/columns in the output matrix so
+    callers can still operate on the result without NaN contamination.
 
     Parameters
     ----------
@@ -29,10 +38,27 @@ def static_fc(roi_ts: np.ndarray) -> np.ndarray:
         Symmetric Fisher z-transformed correlation matrix (n_rois, n_rois)
         with zeros on the diagonal.
     """
+    stds = roi_ts.std(axis=0)
+    bad = stds == 0
+    n_bad = int(bad.sum())
+    if n_bad:
+        logger.warning(
+            "static_fc: %d/%d ROI(s) have zero variance and will be "
+            "zeroed in the FC matrix.",
+            n_bad,
+            roi_ts.shape[1],
+        )
+
     corr = np.corrcoef(roi_ts.T)
+    # Replace any NaN introduced by constant ROIs (or rare numerical edge
+    # cases) with 0 before Fisher z so we don't pollute downstream stats.
+    corr = np.nan_to_num(corr, nan=0.0, posinf=0.0, neginf=0.0)
     np.fill_diagonal(corr, 0.0)
     corr = np.clip(corr, -0.999999, 0.999999)
     z = np.arctanh(corr)
+    if n_bad:
+        z[bad, :] = 0.0
+        z[:, bad] = 0.0
     np.fill_diagonal(z, 0.0)
     return z
 

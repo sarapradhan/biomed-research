@@ -33,13 +33,39 @@ def _find_first_existing(layout: BIDSLayout, entities: Dict, suffixes: List[str]
 
 
 def _infer_tr(layout: BIDSLayout, bold_file: str) -> float:
+    """Return TR (seconds) from BIDS sidecar; fall back to NIfTI header.
+
+    The sidecar JSON's ``RepetitionTime`` is always in seconds per BIDS spec.
+    If that's unavailable we fall back to the NIfTI header's temporal zoom,
+    but we *must* check ``xyzt_units`` because some converters write the TR
+    in milliseconds (or leave the unit unset). Silently trusting
+    ``header.get_zooms()[3]`` produced TRs that were 1000x off in early
+    issue reports.
+    """
     try:
         metadata = layout.get_metadata(bold_file)
         if "RepetitionTime" in metadata:
             return float(metadata["RepetitionTime"])
-    except Exception:
+    except (KeyError, ValueError, OSError):
+        # Malformed or missing sidecar; fall through to header.
         pass
-    return float(nib.load(bold_file).header.get_zooms()[3])
+
+    img = nib.load(bold_file)
+    tr_raw = float(img.header.get_zooms()[3])
+    units = img.header.get_xyzt_units()  # (spatial, temporal)
+    t_unit = units[1] if isinstance(units, tuple) and len(units) > 1 else "unknown"
+
+    if t_unit == "sec":
+        return tr_raw
+    if t_unit == "msec":
+        return tr_raw / 1000.0
+    if t_unit == "usec":
+        return tr_raw / 1_000_000.0
+    raise ValueError(
+        f"Cannot determine TR for {bold_file}: BIDS sidecar lacks "
+        f"RepetitionTime and NIfTI temporal units are '{t_unit}'. "
+        f"Add RepetitionTime to the JSON sidecar or set xyzt_units."
+    )
 
 
 def build_participants_table(cfg: Dict, logger) -> pd.DataFrame:

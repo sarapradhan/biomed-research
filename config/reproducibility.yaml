@@ -1,7 +1,8 @@
 # Configuration for the reproducibility analyses.
 #
-# Consumed by src/fmri_pipeline/reproducibility/*. Kept in the same style
-# as config/pipeline.yaml so the two configs can be loaded side by side.
+# Consumed by src/fmri_pipeline/reproducibility/* and the scripts/run_reproducibility.py
+# harness. Mirrors the style of config/pipeline.yaml so the two configs can be
+# loaded side by side.
 
 project:
   name: reproducibility
@@ -10,15 +11,17 @@ project:
 
 paths:
   # Inputs: derivatives produced by the main pipeline (per-subject, per-run).
-  fc_input_dir: ./derivatives/metrics/connectivity
-  reho_input_dir: ./derivatives/metrics/reho
-  ica_input_dir: ./derivatives/metrics/ica
-  graph_input_dir: ./derivatives/metrics/graph
-  # Outputs: one folder per analysis under reports/reproducibility/.
+  fc_input_dir: ./derivatives/metrics/connectivity        # sub-*_run-*_fc.npy
+  reho_input_dir: ./derivatives/metrics/reho              # sub-*_run-*_reho.npy
+  ica_input_dir: ./derivatives/metrics/ica                # {seeds,lorocv}/{tag}_ica_components.npy
+  graph_input_dir: ./derivatives/metrics/connectivity     # reuses fc_input_dir layout
+  dfc_input_dir: ./derivatives/metrics/roi_timeseries     # sub-*_run-*_roi.npy
+  roi_labels: ./derivatives/atlas/roi_labels.csv          # one ROI label per row (Schaefer style)
+  # Outputs: one folder under reports/reproducibility/.
   output_root: ./reports/reproducibility
 
 # ---------------------------------------------------------------------------
-# Static FC within-subject vs between-subject similarity
+# Static FC within-subject vs between-subject similarity (Step 1.1)
 # ---------------------------------------------------------------------------
 fc:
   enabled: true
@@ -29,18 +32,18 @@ fc:
   output_csv: fc_within_vs_between.csv
 
 # ---------------------------------------------------------------------------
-# ReHo run-to-run similarity
+# ReHo run-to-run similarity (Step 1.2)
 # ---------------------------------------------------------------------------
 reho:
   enabled: true
-  atlas: schaefer_200                # must match main pipeline's ROI atlas
+  match_between_by_run_index: true
   fisher_z_before_tests: true
-  include_split_half: false          # set true only if timeseries are available
+  n_bootstrap: 1000
   output_matrix: reho_similarity_matrix.npy
   output_csv: reho_summary.csv
 
 # ---------------------------------------------------------------------------
-# ICA stability across seeds and run subsets
+# ICA stability across seeds and run subsets (Step 1.3)
 # ---------------------------------------------------------------------------
 ica:
   stability:
@@ -48,13 +51,14 @@ ica:
     n_components: 20                 # must match manuscript's reported K
     seeds: [1, 2, 3, 4, 5]
     leave_one_run_out: true
-    robust_threshold: 0.7            # r for "robust" component
-    matching: hungarian              # scipy.optimize.linear_sum_assignment
+    robust_threshold: 0.7            # |r| above which a component is "robust"
+    seeds_subdir: seeds              # under ica_input_dir
+    lorocv_subdir: lorocv
     output_seeds_csv: ica_stability_seeds.csv
     output_lorocv_csv: ica_stability_lorocv.csv
 
 # ---------------------------------------------------------------------------
-# Graph metric stability
+# Graph metric stability (Step 1.4)
 # ---------------------------------------------------------------------------
 graph:
   stability:
@@ -69,6 +73,40 @@ graph:
     output_csv: graph_metrics_bootstrap.csv
 
 # ---------------------------------------------------------------------------
+# Dynamic FC window-size sensitivity (Phase 2 — Step 2.1, 2.2)
+# ---------------------------------------------------------------------------
+dfc:
+  enabled: true
+  window_sizes: [20, 30, 40]         # TRs; sweep documented in Methods
+  step_size: 1                       # 1 TR step = densely overlapping windows
+  k_states: 4                        # k-means cluster count for state assignment
+  output_per_window_csv: dfc_sensitivity_per_window.csv
+  output_ari_csv: dfc_sensitivity_ari.csv
+  output_json: dfc_sensitivity.json
+
+# ---------------------------------------------------------------------------
+# Canonical-network biological anchor (Phase 3 — Step 3.1–3.3)
+# ---------------------------------------------------------------------------
+network_anchor:
+  enabled: true
+  n_permutations: 1000               # one-sided permutation test for within > between
+  network_order: [Vis, SomMot, DorsAttn, SalVentAttn, Limbic, Cont, Default]
+  label_overrides: {}                # ROI index -> network name (non-Schaefer atlases)
+  group_fc_path: null                # if null, fc_input_dir is averaged on the fly
+  output_summary: network_anchor_summary.csv
+  output_blocks: network_anchor_block_means.csv
+  output_matrix: network_anchor_reordered.npy
+
+# ---------------------------------------------------------------------------
+# Validation scorecard — Table 1 of the JEI revision
+# ---------------------------------------------------------------------------
+scorecard:
+  enabled: true
+  output_markdown: scorecard.md
+  output_csv: scorecard.csv
+  graph_primary_metric: modularity   # which graph metric headlines the row
+
+# ---------------------------------------------------------------------------
 # Runtime knobs. Selectively disable analyses to iterate faster.
 # ---------------------------------------------------------------------------
 execution:
@@ -77,5 +115,8 @@ execution:
     - reho
     - ica
     - graph
+    - dfc
+    - network_anchor
+    - scorecard                      # scorecard always runs last; reads CSVs above
   continue_on_error: true            # one failing module should not halt others
   write_manifest: true               # records versions, git sha, config hash
