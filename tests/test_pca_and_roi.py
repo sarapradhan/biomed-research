@@ -321,8 +321,14 @@ class TestSavePcaTable:
         assert df["explained_variance_ratio"].iloc[0] == 0.5
 
 
+@pytest.mark.network
 class TestGetSchaeferAtlas:
-    """Tests for get_schaefer_atlas atlas fetching."""
+    """Tests for get_schaefer_atlas atlas fetching.
+
+    These hit nilearn's atlas-fetcher, which downloads from
+    raw.githubusercontent.com. Marked ``network`` so they're skipped by
+    default; run with ``pytest -m network`` to exercise them when online.
+    """
 
     def test_get_schaefer_atlas_returns_tuple(self) -> None:
         """Test that get_schaefer_atlas returns maps and labels."""
