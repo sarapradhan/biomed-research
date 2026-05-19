@@ -22,10 +22,11 @@ This design allows adding/removing metrics without rewriting ingestion or group 
 4. ReHo map computation
 5. Static FC (Pearson + Fisher-z)
 6. Dynamic FC (30 TR / 5 TR)
-7. Subject ICA + cross-subject matching
+7. Subject ICA + cross-subject matching (Hungarian assignment)
 8. Subject PCA (top-5 explained variance)
 9. ISC leave-one-out + permutation null
 10. Group-level statistics + visualization/tables
+11. Reproducibility validation suite (Table 1: FC, ReHo, ICA, graph, dFC, network anchor)
 
 ## Core Scientific Rules Enforced
 - Confounds: Friston-24 + WM/CSF (if present)
@@ -52,10 +53,19 @@ Under `derivatives/metrics`:
 - `figures/`: group-level figures
 - `group_stats/`: voxelwise statistical maps
 
-## Current Local Run Context
-Recent execution on your machine used data mapped under:
-- `/path/to/your/fMRI`
+Under `reports/reproducibility/`:
+- `scorecard.md` / `scorecard.csv`: Table 1 pass/fail summary
+- `fc_within_vs_between.csv`, `reho_summary.csv`, `ica_stability_seeds.csv`
+- `ica_stability_lorocv.csv`, `graph_metrics_bootstrap.csv`
+- `dfc_sensitivity.json`, `network_anchor_summary.csv`
+- `manifest.json`: git SHA, package versions, run timing
 
-In that run:
-- Resting-state milestones completed through group-level outputs
-- ISC was skipped due to insufficient movie subjects in the available dataset
+## Validated Run Context
+Pipeline has been validated on **OpenNeuro ds007318** (working-memory removal task, Northwest Normal University):
+- 3 subjects (sub-01, sub-02, sub-03); 5 runs total (sub-01: 2 sessions, sub-02: 1, sub-03: 2)
+- All participants are labeled as clinical patients; no healthy control arm
+- Group-level statistics disabled for this dataset (`stats.diagnosis_column: __no_groups__`)
+- ISC skipped (task paradigm, not naturalistic movie stimulus)
+- Full reproducibility suite completed; results reported in Table 1 of the manuscript
+
+Mean QC: FD 0.10–0.15 mm; 0–1.2% volumes scrubbed; DVARS 3.68–4.41
