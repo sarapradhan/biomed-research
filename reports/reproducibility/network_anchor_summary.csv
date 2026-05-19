@@ -1,0 +1,10 @@
+metric,value
+n_rois,200
+n_networks,7
+network_names,"['Cont', 'Default', 'DorsAttn', 'Limbic', 'SalVentAttn', 'SomMot', 'Vis']"
+within_mean,0.4284500482906883
+between_mean,0.21260733073735272
+gap_mean,0.21584271755333556
+p_value,0.000999000999000999
+n_permutations,1000
+modularity_q,nan

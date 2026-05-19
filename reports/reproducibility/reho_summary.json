@@ -1,0 +1,16 @@
+{
+  "within_mean": 0.9683224075185104,
+  "within_std": 0.004702921605080492,
+  "between_mean": 0.5129048042482113,
+  "between_std": 0.025457175545237017,
+  "gap_mean": 0.4554176032702991,
+  "gap_ci_low": 0.4360654504282273,
+  "gap_ci_high": 0.48026505327516755,
+  "n_subjects": 3,
+  "n_runs": 5,
+  "n_within_pairs": 2,
+  "n_between_pairs": 4,
+  "test_statistic": 8.0,
+  "p_value": 0.06666666666666667,
+  "effect_size": 31.20798278512343
+}

@@ -37,7 +37,7 @@ def build_design_matrix(subject_df: pd.DataFrame, cfg: Dict) -> Tuple[np.ndarray
                 colnames.append(dc)
         else:
             vals = pd.to_numeric(df[c], errors='coerce').fillna(pd.to_numeric(df[c], errors='coerce').mean())
-            vals = (vals - vals.mean()) / (vals.std(ddof=0) if vals.std(ddof=0) > 0 else 1.0)
+            vals = (vals - vals.mean()) / (vals.std(ddof=1) if vals.std(ddof=1) > 0 else 1.0)  # ddof=1: sample std
             x_parts.append(vals.rename(c))
             colnames.append(c)
 

@@ -81,7 +81,7 @@ def permutation_pvalues(
     for p in range(n_perm):
         shifted = []
         for t in ts_list:
-            shift = int(rng.integers(0, min_t))
+            shift = int(rng.integers(1, min_t))  # 1-indexed: exclude shift=0 (observed statistic)
             shifted.append(np.roll(t, shift=shift, axis=0))
 
         loo = []

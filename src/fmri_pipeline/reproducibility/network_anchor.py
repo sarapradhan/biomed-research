@@ -135,8 +135,13 @@ def _within_between_means(
     vals = fc[iu]
     within = vals[same]
     between = vals[~same]
-    w = float(np.mean(within)) if within.size else float("nan")
-    b = float(np.mean(between)) if between.size else float("nan")
+    # Use nanmean so that NaN-masked ROIs (outside brain coverage) do not
+    # propagate NaN into the summary statistics.
+    w = float(np.nanmean(within)) if within.size else float("nan")
+    b = float(np.nanmean(between)) if between.size else float("nan")
+    # Strip NaN before returning arrays (needed for permutation test)
+    within = within[~np.isnan(within)]
+    between = between[~np.isnan(between)]
     return w, b, within, between
 
 
@@ -160,7 +165,7 @@ def block_means(
     counts: Dict[str, int] = {}
     for key in np.unique(pair_labels):
         mask = pair_labels == key
-        means[key] = float(np.mean(vals[mask]))
+        means[key] = float(np.nanmean(vals[mask]))
         counts[key] = int(mask.sum())
     return means, counts
 
@@ -194,7 +199,7 @@ def permutation_test_within_minus_between(
         shuffled = rng.permutation(nets)
         same = shuffled[iu[0]] == shuffled[iu[1]]
         if same.any() and (~same).any():
-            null[p] = float(np.mean(vals[same]) - np.mean(vals[~same]))
+            null[p] = float(np.nanmean(vals[same]) - np.nanmean(vals[~same]))
         else:
             null[p] = float("nan")
 
@@ -352,10 +357,23 @@ def load_group_fc_and_labels(
     else:
         with labels_path.open() as f:
             rows = [row for row in csv.reader(f) if row]
-        if rows and rows[0] and rows[0][0].lower() in {"label", "roi_label", "name"}:
-            labels = [r[0] for r in rows[1:]]
+        # Detect a header row: any cell in the first row that is a known
+        # column-name string (not a parcel label) triggers skipping it.
+        _HEADER_TOKENS = {"label", "roi_label", "name", "roi_index", "index", "parcel"}
+        first_row_vals = {c.strip().lower() for c in rows[0]} if rows else set()
+        if rows and first_row_vals & _HEADER_TOKENS:
+            rows = rows[1:]
+        # The label column may be the first or second column (roi_index,label).
+        # Use the first non-numeric column, defaulting to column 0.
+        if rows and len(rows[0]) >= 2:
+            try:
+                int(rows[0][0])
+                label_col = 1  # first column is numeric index → label is second
+            except ValueError:
+                label_col = 0
         else:
-            labels = [r[0] for r in rows]
+            label_col = 0
+        labels = [r[label_col] for r in rows if len(r) > label_col]
 
     if len(labels) != fc.shape[0]:
         raise ValueError(
@@ -511,6 +529,16 @@ def _read_labels(labels_path: Path) -> List[str]:
         return list(json.loads(Path(labels_path).read_text()))
     with Path(labels_path).open() as f:
         rows = [row for row in csv.reader(f) if row]
-    if rows and rows[0] and rows[0][0].lower() in {"label", "roi_label", "name"}:
-        return [r[0] for r in rows[1:]]
+    # Detect a header row: any cell in the first row that is a known
+    # non-label column name causes the row to be skipped.
+    _HEADER_TOKENS = {"label", "roi_label", "name", "roi_index", "index", "parcel"}
+    if rows and {c.strip().lower() for c in rows[0]} & _HEADER_TOKENS:
+        rows = rows[1:]
+    # Support two-column format (roi_index, label): use first non-numeric column.
+    if rows and len(rows[0]) >= 2:
+        try:
+            int(rows[0][0])
+            return [r[1] for r in rows if len(r) >= 2]
+        except ValueError:
+            pass
     return [r[0] for r in rows]

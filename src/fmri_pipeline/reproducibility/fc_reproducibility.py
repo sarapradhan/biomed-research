@@ -72,6 +72,14 @@ def _group_by_subject(run_fcs: Sequence[SubjectRunFC]) -> Dict[str, List[Subject
     return grouped
 
 
+def _nanpearsonr(a: np.ndarray, b: np.ndarray) -> float:
+    """Pearson r using only edges that are non-NaN in both vectors."""
+    valid = ~(np.isnan(a) | np.isnan(b))
+    if valid.sum() < 10:
+        return float("nan")
+    return float(np.corrcoef(a[valid], b[valid])[0, 1])
+
+
 def _cohens_d(a: np.ndarray, b: np.ndarray) -> float:
     if len(a) < 2 or len(b) < 2:
         return float("nan")
@@ -90,14 +98,19 @@ def _cohens_d(a: np.ndarray, b: np.ndarray) -> float:
 def compute_within_subject_similarity(
     run_fcs: Sequence[SubjectRunFC],
 ) -> Dict[str, List[float]]:
-    """For each subject with >=2 runs, return Pearson r across all run-pair FC vectors."""
+    """For each subject with >=2 runs, return Pearson r across all run-pair FC vectors.
+
+    NaN-valued edges (ROIs outside brain coverage) are excluded pairwise so
+    that partial brain coverage does not propagate NaN into the similarity
+    statistic.
+    """
     grouped = _group_by_subject(run_fcs)
     out: Dict[str, List[float]] = {}
     for sid, runs in grouped.items():
         if len(runs) < 2:
             continue
         vecs = [r.upper_triangle() for r in runs]
-        out[sid] = [float(np.corrcoef(a, b)[0, 1]) for a, b in combinations(vecs, 2)]
+        out[sid] = [_nanpearsonr(a, b) for a, b in combinations(vecs, 2)]
     return out
 
 
@@ -125,15 +138,13 @@ def compute_between_subject_similarity(
         for sa, sb in combinations(subjects, 2):
             shared_runs = sorted(set(by_sub_run[sa]) & set(by_sub_run[sb]))
             for run in shared_runs:
-                sims.append(
-                    float(np.corrcoef(by_sub_run[sa][run], by_sub_run[sb][run])[0, 1])
-                )
+                sims.append(_nanpearsonr(by_sub_run[sa][run], by_sub_run[sb][run]))
     else:
         by_sub = {s: [rf.upper_triangle() for rf in grouped[s]] for s in subjects}
         for sa, sb in combinations(subjects, 2):
             for va in by_sub[sa]:
                 for vb in by_sub[sb]:
-                    sims.append(float(np.corrcoef(va, vb)[0, 1]))
+                    sims.append(_nanpearsonr(va, vb))
     return sims
 
 
