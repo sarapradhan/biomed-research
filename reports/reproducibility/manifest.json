@@ -1,0 +1,81 @@
+{
+  "started_at": "2026-05-18T06:17:05.920247+00:00",
+  "config_path": "/Users/rahul/Docs/Claude/Projects/fMRI-Enhance/config/reproducibility_real.yaml",
+  "config_hash": "cc57871e8f60dfd7",
+  "git_sha": "0342a9a05097a588a947e7396f1c80dc40293699",
+  "python": "3.14.3",
+  "platform": "macOS-26.4.1-arm64-arm-64bit-Mach-O",
+  "packages": {
+    "python": "3.14.3",
+    "numpy": "2.4.5",
+    "scipy": "1.17.1",
+    "pandas": "3.0.3",
+    "nibabel": "5.4.2",
+    "nilearn": "0.13.1",
+    "scikit-learn": "not_installed",
+    "statsmodels": "not_installed",
+    "pybids": "not_installed",
+    "joblib": "1.5.3",
+    "networkx": "3.6.1"
+  },
+  "steps": [
+    {
+      "step": "fc",
+      "module": "fmri_pipeline.reproducibility.fc_reproducibility",
+      "enabled": true,
+      "status": "ok",
+      "error": null,
+      "duration_seconds": 0.434
+    },
+    {
+      "step": "reho",
+      "module": "fmri_pipeline.reproducibility.reho_stability",
+      "enabled": true,
+      "status": "ok",
+      "error": null,
+      "duration_seconds": 0.009
+    },
+    {
+      "step": "ica",
+      "module": "fmri_pipeline.reproducibility.ica_stability",
+      "enabled": true,
+      "status": "ok",
+      "error": null,
+      "duration_seconds": 0.003
+    },
+    {
+      "step": "graph",
+      "module": "fmri_pipeline.reproducibility.graph_stability",
+      "enabled": true,
+      "status": "ok",
+      "error": null,
+      "duration_seconds": 6.207
+    },
+    {
+      "step": "dfc",
+      "module": "fmri_pipeline.reproducibility.dfc_sensitivity",
+      "enabled": true,
+      "status": "ok",
+      "error": null,
+      "duration_seconds": 4.681
+    },
+    {
+      "step": "network_anchor",
+      "module": "fmri_pipeline.reproducibility.network_anchor",
+      "enabled": true,
+      "status": "ok",
+      "error": null,
+      "duration_seconds": 0.282
+    },
+    {
+      "step": "scorecard",
+      "module": "fmri_pipeline.reproducibility.scorecard",
+      "enabled": true,
+      "status": "ok",
+      "error": null,
+      "duration_seconds": 0.001
+    }
+  ],
+  "finished_at": "2026-05-18T06:17:17.856564+00:00",
+  "overall_status": "ok"
+}

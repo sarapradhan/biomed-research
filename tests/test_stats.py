@@ -347,9 +347,11 @@ class TestBuildDesignMatrix:
         x, cols, _ = build_design_matrix(df, cfg)
 
         age_col = x[:, cols.index("age")]
-        # Should be standardized: mean ~0, std ~1
+        # Should be standardized: mean ~0, sample std (ddof=1) == 1.0
+        # np.std uses ddof=0 by default, so the population std of a sample-
+        # standardized vector equals sqrt((n-1)/n), not 1.0.
         assert np.isclose(np.mean(age_col), 0.0, atol=1e-10)
-        assert np.isclose(np.std(age_col), 1.0, atol=1e-10)
+        assert np.isclose(np.std(age_col, ddof=1), 1.0, atol=1e-10)
 
     def test_build_design_matrix_optional_covariates(self) -> None:
         """Test optional covariate inclusion."""

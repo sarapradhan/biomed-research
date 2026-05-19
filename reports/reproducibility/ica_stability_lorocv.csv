@@ -1,0 +1,12 @@
+metric,value
+sweep,run_subsets
+k_components,20
+robust_threshold,0.7
+n_runs,3
+pairwise_runs_considered,3
+mean_matched_correlation,0.4112887231678938
+std_matched_correlation,0.18420049746763087
+median_matched_correlation,0.40436283165178344
+n_robust_components,0
+reference_tag,lorocv-01
+details,{'n_features': 200}

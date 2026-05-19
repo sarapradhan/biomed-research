@@ -1,0 +1,12 @@
+metric,value
+sweep,seeds
+k_components,20
+robust_threshold,0.7
+n_runs,5
+pairwise_runs_considered,10
+mean_matched_correlation,0.8771510640915912
+std_matched_correlation,0.1522432231656936
+median_matched_correlation,0.9443396780928128
+n_robust_components,20
+reference_tag,seed-1
+details,{'n_features': 200}
