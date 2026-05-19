@@ -106,7 +106,7 @@ The pipeline organizes 16 core modules plus a 7-module reproducibility subpackag
 
 - **`ica.py` (103 lines):** Independent component analysis (spatial ICA)
   - Applies FastICA decomposition (20 components) to subject-level 4D time series
-  - Cross-subject component matching via Hungarian algorithm (optimal bipartite assignment) to enable aggregation
+  - Cross-subject component matching via hierarchical clustering (average-linkage on spatial correlation distance) to enable aggregation
   - Computes network-level component loadings for group analysis
   - Outputs per-subject component maps and loading tables; enables data-driven identification of subject-specific networks
   - **Note:** The reproducibility suite uses a separate *temporal* ICA on Schaefer-200 parcellated time series as a computational proxy for decomposition stability (see `reproducibility/ica_stability.py`)
@@ -227,10 +227,10 @@ graph LR
     
     E1 --> F1["roi_timeseries.npy"]
     E2 --> F2["reho_map.nii.gz"]
-    E3 --> F3["fc_matrices.npy<br/>dfc_state.npy"]
-    E4 --> F4["ica_maps.nii.gz<br/>loadings.csv"]
+    E3 --> F3["static_fc_fisherz.npy<br/>dfc_mean.npy / dfc_variability_std.npy"]
+    E4 --> F4["ica_maps.npy / ica_timecourses.npy<br/>ica_component_matching.csv<br/>ica_subject_loadings.csv"]
     E5 --> F5["pca_evr.csv"]
-    E6 --> F6["isc_mean.nii.gz<br/>isc_p.nii.gz"]
+    E6 --> F6["isc_mean.nii.gz<br/>isc_pvals.nii.gz / isc_qvals.nii.gz"]
     E7 --> F7["scene_isc.csv"]
     
     F1 & F2 & F3 & F4 & F5 & F6 & F7 --> G["📊 stats.py<br/>Mass-univariate OLS<br/>FDR Correction"]
@@ -385,10 +385,10 @@ features_enabled:
   scene_annotation: false  # requires manual annotations
 
 # 5. CONNECTIVITY ANALYSIS
-connectivity:
-  dynamic_fc_window_tr: 22
-  dynamic_fc_step_tr: 1
-  apply_clustering: false
+dynamic_fc:
+  window_trs: 30          # sliding-window length in TRs
+  step_trs: 5             # step size between windows
+  exploratory_clustering: false  # optional k-means state clustering
 
 # 6. GROUP STATISTICS
 stats:
@@ -443,7 +443,7 @@ Downstream group analyses automatically exclude flagged runs, with transparent r
 The pipeline issues structured warnings for:
 - **TR heterogeneity:** Runs with inconsistent TRs within a participant
 - **Missing covariates:** Participants with incomplete diagnosis or demographic data
-- **Insufficient ISC cohort:** Fewer than 10 control subjects for ISC (minimum recommended)
+- **Insufficient ISC cohort:** Fewer than 4 subjects for ISC (configurable via `isc.min_subjects`; recommend ≥10 for stable null distributions)
 - **Low statistical power:** Group size < 20 per diagnosis group
 
 ---
@@ -583,7 +583,7 @@ The test suite comprises 18 test modules covering all production code including 
 
 ### Methodological Assumptions
 
-**ISC Cohort Size:** ISC requires a minimum of 10 control subjects for stable null distribution. Analyses with fewer subjects produce unreliable p-values.
+**ISC Cohort Size:** The pipeline enforces a minimum of 4 subjects (configurable via `isc.min_subjects`). For stable permutation null distributions, ≥10 subjects is recommended. Analyses with fewer subjects produce unreliable p-values and should be reported as descriptive only.
 
 **Homogeneous Stimulus:** Scene annotation and ISC assume all subjects experience identical stimulus timing (e.g., same movie, same fMRI protocol TR). Heterogeneous stimulus requires custom alignment logic.
 

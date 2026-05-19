@@ -98,7 +98,7 @@ See [REPRODUCIBILITY_RUNBOOK.md](../REPRODUCIBILITY_RUNBOOK.md) for full step-by
 - ReHo: `reho_map.nii.gz`
 - Static FC: `static_fc_fisherz.npy/csv`
 - Dynamic FC: `dfc_mean.npy/csv`, `dfc_variability_std.npy/csv`
-- ICA: `ica_subject_loadings.csv`, `ica_component_matching.csv`
+- ICA: `ica_maps.npy` (per-subject), `ica_timecourses.npy` (per-subject), `ica_component_matching.csv`, `ica_subject_loadings.csv`, `ica_cluster_centroids.npy`
 - PCA: `pca_explained_variance.csv`
 - ISC: `isc_mean.nii.gz`, `isc_qvals.nii.gz`, `isc_sig_fdrq05.nii.gz` (if movie cohort available)
 
