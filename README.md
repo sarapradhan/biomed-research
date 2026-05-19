@@ -138,7 +138,7 @@ biomed-research/
 │   ├── roi.py                        # Schaefer atlas ROI extraction
 │   ├── reho.py                       # Regional homogeneity
 │   ├── connectivity.py               # Static and dynamic FC
-│   ├── ica.py                        # Spatial ICA + cross-subject matching
+│   ├── ica.py                        # Spatial ICA + hierarchical cross-subject matching
 │   ├── pca_metrics.py                # PCA explained variance
 │   ├── isc.py                        # Intersubject correlation (ISC)
 │   ├── stats.py                      # Group-level statistics (OLS, FDR)

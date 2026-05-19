@@ -62,7 +62,8 @@ dynamic_fc:
 ica:
   n_components: 20
   max_iter: 500
-  corr_match_threshold: 0.2
+  # corr_match_threshold was removed; cross-subject matching uses hierarchical
+  # clustering (average-linkage on 1-|r| distance) — not a threshold cutoff.
 
 pca:
   n_components: 5

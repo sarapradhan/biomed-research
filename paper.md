@@ -77,7 +77,7 @@ We tested pipeline output stability across 11 parameter conditions spanning 5 di
 
 ### Software and statistics
 
-`fmri-pipeline` is implemented in Python (≥3.9) and depends on numpy, scipy, pandas, nilearn, nibabel, statsmodels, scikit-learn, and pyyaml. Group-level statistical testing used mass-univariate OLS with Benjamini-Hochberg FDR correction across all edges or voxels. All stochastic operations (ICA initialization, permutation sampling, bootstrap resampling) used deterministic seeds specified in the configuration file to ensure bit-level reproducibility on the same platform. The test suite comprises 18 test files and 382 tests validating all core computations using synthetic data; no neuroimaging files are required to run the tests.
+`fmri-pipeline` is implemented in Python (≥3.8) and depends on numpy, scipy, pandas, nilearn, nibabel, statsmodels, scikit-learn, and pyyaml. Group-level statistical testing used mass-univariate OLS with Benjamini-Hochberg FDR correction across all edges or voxels. All stochastic operations (ICA initialization, permutation sampling, bootstrap resampling) used deterministic seeds specified in the configuration file to ensure bit-level reproducibility on the same platform. The test suite comprises 18 test files and 382 tests validating all core computations using synthetic data; no neuroimaging files are required to run the tests.
 
 ---
 

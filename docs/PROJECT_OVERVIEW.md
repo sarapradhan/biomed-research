@@ -22,7 +22,7 @@ This design allows adding/removing metrics without rewriting ingestion or group 
 4. ReHo map computation
 5. Static FC (Pearson + Fisher-z)
 6. Dynamic FC (30 TR / 5 TR)
-7. Subject ICA + cross-subject matching (Hungarian assignment)
+7. Subject ICA + cross-subject matching (hierarchical clustering on spatial correlation)
 8. Subject PCA (top-5 explained variance)
 9. ISC leave-one-out + permutation null
 10. Group-level statistics + visualization/tables

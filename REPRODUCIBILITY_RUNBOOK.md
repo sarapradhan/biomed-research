@@ -93,7 +93,7 @@ These are the real results from ds007318, generated before ReHo recomputation wa
 | ICA stability (LORO-CV) | N≤3 subjects — underpowered | n/a |
 | Graph stability | modularity@0.15: 0.447 [0.391, 0.503], CV=17% | OK |
 | dFC sensitivity | ARI(20-30)=0.45, ARI(20-40)=0.42, ARI(30-40)=0.57 | n/a |
-| Network anchor | within=0.428, between=0.213, gap=0.216, p=0.001 | OK |
+| Network anchor | within=0.428, between=0.213, gap=0.216, p=0.001 (= 1/1,000, minimum resolvable; reported as p < 0.005 in manuscript) | OK |
 
 **Key interpretation notes for the manuscript:**
 
