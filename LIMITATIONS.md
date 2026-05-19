@@ -18,9 +18,11 @@ Results are computed using the Schaefer parcellation (configurable at 100, 200, 
 
 Dynamic functional connectivity is computed using a sliding-window approach with configurable window length (default: 30 TRs) and step size (5 TRs). Window length trades off temporal resolution against statistical stability of per-window correlation estimates. Very short windows (< 20 TRs) produce noisy FC estimates; very long windows (> 60 TRs) average out genuine temporal dynamics. The sensitivity analysis tests this trade-off explicitly.
 
-## Clinical Data Access
+## Clinical Data and Group Comparisons
 
 The original project design included a schizophrenia vs. healthy control group comparison using SchizConnect data. SchizConnect was non-functional at the time of development, and this extension was not completed. The group-statistics module exists and is tested, but it has not been exercised on a real clinical cohort with both diagnostic groups.
+
+The validation dataset (OpenNeuro ds007318) is drawn from a clinical population (working-memory removal paradigm). All three participants are labeled as patients; there is no control arm. Group-level statistics are disabled for this dataset. All results should be treated as pipeline feasibility demonstrations, not as clinical findings.
 
 ## ISC Module Scope
 
@@ -33,6 +35,14 @@ The pipeline assumes fMRIPrep derivatives as input. It does not perform raw DICO
 ## No Deep Learning Integration
 
 The original project plan included deep-learning feature extraction (e.g., CLIP-derived visual features for naturalistic stimuli). This component was not implemented in the current version. Future extensions may add model-based feature comparison, but the current pipeline relies entirely on classical signal processing and statistical methods.
+
+## ICA Reproducibility Proxy
+
+The reproducibility suite (`reproducibility/ica_stability.py`) measures ICA stability using *temporal* ICA on Schaefer-200 parcellated time series, not *spatial* ICA on full 4D BOLD volumes (as used in the main pipeline). This is a computational proxy that is sufficient to validate decomposition stability on small datasets but does not directly test spatial component reproducibility. Users who require spatial ICA stability validation should run the main `ica.py` module with multiple seeds and compare output component maps directly.
+
+## Partial Brain Coverage (sub-03 run-2)
+
+One ROI (out of 200 Schaefer parcels) in sub-03 session-2 has zero-variance time series due to partial brain coverage at the boundary of the field of view. This ROI is NaN-masked in all FC analyses via `_nanpearsonr()` (uses only jointly non-NaN edges). Results are not materially affected, but this run yields 199 effective ROIs rather than 200.
 
 ## Reproducibility Caveats
 

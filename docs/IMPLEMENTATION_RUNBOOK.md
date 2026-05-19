@@ -1,11 +1,14 @@
 # Implementation and Operations Runbook
 
 ## 1) Repository Map
-- `config/`: runtime configuration (`pipeline.yaml`)
+- `config/`: runtime configuration (`pipeline.yaml`, `reproducibility_real.yaml`, etc.)
 - `src/fmri_pipeline/`: core implementation modules
-- `scripts/`: CLI entrypoints
-- `tests/`: lightweight sanity tests
+- `src/fmri_pipeline/reproducibility/`: reproducibility validation subpackage
+- `scripts/`: CLI entrypoints (pipeline, step runner, reproducibility, sensitivity)
+- `tests/`: 18-module test suite
+- `reports/reproducibility/`: reproducibility suite outputs (Table 1)
 - `docs/`: project documentation
+- `REPRODUCIBILITY_RUNBOOK.md`: step-by-step reproducibility guide
 
 ## 2) Milestone-to-Module Mapping
 1. Ingest
@@ -18,14 +21,22 @@
    - `reho.py`
 5. Static FC / Dynamic FC
    - `connectivity.py`
-6. ICA
+6. ICA (spatial, with Hungarian cross-subject matching)
    - `ica.py` + orchestration in `pipeline.py`
 7. PCA
    - `pca_metrics.py`
-8. ISC
+8. ISC (naturalistic data only)
    - `isc.py`
-9. Group stats and visualizations
+9. Group stats and visualizations (requires control + patient groups)
    - `stats.py`, `viz.py`, `pipeline.py`
+10. Reproducibility validation suite (Table 1)
+    - `reproducibility/fc_reproducibility.py`
+    - `reproducibility/reho_stability.py`
+    - `reproducibility/ica_stability.py`
+    - `reproducibility/graph_stability.py`
+    - `reproducibility/dfc_sensitivity.py`
+    - `reproducibility/network_anchor.py`
+    - `reproducibility/scorecard.py`
 
 ## 3) Standard Execution
 ### Full pipeline
@@ -45,6 +56,24 @@ python scripts/run_step.py --config config/pipeline.yaml --step pca
 python scripts/run_step.py --config config/pipeline.yaml --step isc
 python scripts/run_step.py --config config/pipeline.yaml --step group_stats
 ```
+
+> **Note for ds007318:** `isc` and `group_stats` are disabled in `config/pipeline.ds007318.yaml` — ISC requires naturalistic movie data and group stats require a patient + control cohort.
+
+### Reproducibility validation suite
+```bash
+# One-command run (recommended):
+bash scripts/run_all_reproducibility.sh
+
+# Selective modules only:
+python scripts/run_reproducibility.py \
+    --config config/reproducibility_real.yaml \
+    --only fc,network_anchor
+
+# View results:
+cat reports/reproducibility/scorecard.md
+```
+
+See [REPRODUCIBILITY_RUNBOOK.md](../REPRODUCIBILITY_RUNBOOK.md) for full step-by-step instructions and expected results.
 
 ## 4) Mandatory Configuration Checks Before Running
 - `paths.bids_roots`: must exist and be readable
@@ -104,16 +133,26 @@ Minimum checks before trusting group-level output:
 - Merge type mismatch in group stats:
   - subject IDs inconsistent (e.g., `01` vs `1`) between files
 - ISC skipped:
-  - insufficient movie subjects after filtering/exclusion
+  - insufficient movie subjects after filtering/exclusion; or dataset is task-paradigm (not naturalistic)
 - ICA convergence warnings:
   - increase `ica.max_iter`, consider lower component count in debug
+- Reproducibility suite: `index.lock` error:
+  - stale git lock; run `rm .git/index.lock` before retrying
+- Reproducibility suite: ReHo stubs are empty NIfTI files:
+  - run `python scripts/prep_reproducibility_inputs.py` (recomputes from clean BOLD)
+- FC p-value not significant despite clear gap:
+  - expected with N=3 (only 2 within-subject pairs); report bootstrap CI instead
 
 ## 10) Logging and Audit Trail
 - Main logs: `derivatives/logs/pipeline.log`
 - Per-step logs: created by step runner names
 - Persisted manifests serve as stage-level audit checkpoints
 
-## 11) Recommended Next Documentation Additions
+## 11) Recommended Next Steps
+- Add FC matrix figure (Yeo network borders) and ReHo brain map to the manuscript
+- Fill `[SOFTWARE_VERSION]` placeholder in `paper.md` after tagging a GitHub release
+- Archive to Zenodo and fill `[ZENODO_DOI]` placeholder
+- Add scanner acquisition parameters (field strength, TE, flip angle) to `paper.md` from ds007318 BIDS JSON sidecars
+- Generate `stability_summary.csv` by running the sensitivity analysis script
 - Data dictionary for all generated tables
-- Reproducibility report template (software versions + hash of config)
 - Figure interpretation guide for collaborators

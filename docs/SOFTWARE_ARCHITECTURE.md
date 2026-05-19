@@ -18,7 +18,7 @@ The fMRI-Pipeline is a modular, configuration-driven neuroimaging analysis frame
 
 ## 2. Architectural Overview: Three-Tier Design
 
-The pipeline organizes 15 modules across three architectural tiers, each responsible for distinct stages of the data processing workflow:
+The pipeline organizes 16 core modules plus a 7-module reproducibility subpackage across three architectural tiers, each responsible for distinct stages of the data processing workflow:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -38,6 +38,14 @@ The pipeline organizes 15 modules across three architectural tiers, each respons
 │            TIER 1: RELIABILITY LAYER                            │
 │   bids_ingest.py  →  preprocessing.py  →  qc.py                │
 │      Output: Cleaned fMRI time series + quality flags           │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│            REPRODUCIBILITY SUBPACKAGE (Cross-cutting)           │
+│  fc_reproducibility  │  reho_stability  │  ica_stability        │
+│  graph_stability  │  dfc_sensitivity  │  network_anchor         │
+│  scorecard                                                       │
+│  Output: reports/reproducibility/ — Table 1 validation suite    │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -92,15 +100,16 @@ The pipeline organizes 15 modules across three architectural tiers, each respons
 
 - **`connectivity.py` (76 lines):** Static and dynamic functional connectivity
   - **Static FC:** Pearson correlation matrices (full run), followed by Fisher-z transformation for Gaussian behavior and combined analysis
-  - **Dynamic FC:** Sliding-window correlation matrices (window size 22 TR, step 1 TR), with temporal variability (STD across windows)
+  - **Dynamic FC:** Sliding-window correlation matrices (default: window size 30 TR, step 5 TR), with temporal variability (STD across windows)
   - Optional k-means clustering of windowed states for identifying recurrent connectivity patterns
   - Outputs per-run static matrices, dynamic state matrices, and subject-level summary statistics
 
 - **`ica.py` (103 lines):** Independent component analysis (spatial ICA)
   - Applies FastICA decomposition (20 components) to subject-level 4D time series
-  - Cross-subject component matching via max-correlation heuristic to enable aggregation
+  - Cross-subject component matching via Hungarian algorithm (optimal bipartite assignment) to enable aggregation
   - Computes network-level component loadings for group analysis
   - Outputs per-subject component maps and loading tables; enables data-driven identification of subject-specific networks
+  - **Note:** The reproducibility suite uses a separate *temporal* ICA on Schaefer-200 parcellated time series as a computational proxy for decomposition stability (see `reproducibility/ica_stability.py`)
 
 - **`pca_metrics.py` (43 lines):** Principal component analysis (PCA) for dimensional reduction
   - Applies PCA to concatenated ROI time series across runs
@@ -119,6 +128,48 @@ The pipeline organizes 15 modules across three architectural tiers, each respons
   - Integrates ISC maps with scene annotations to identify brain regions synchronized during specific narrative moments
   - Supports multi-level feature analysis (scene-level, transition-level)
   - Enables investigation of stimulus-driven neural synchrony and narrative comprehension
+
+---
+
+### Reproducibility Subpackage (`reproducibility/`)
+
+**Responsibility:** Cross-cutting validation suite that quantifies pipeline stability and biological plausibility. Consumes outputs from Tier 1 and Tier 2 and produces Table 1 of the manuscript.
+
+**Modules:**
+
+- **`fc_reproducibility.py`:** Static FC within vs. between-subject similarity
+  - Computes Fisher-z pairwise correlations for all within-subject run pairs and all between-subject run pairs
+  - Mann-Whitney U test with bootstrap confidence intervals (B=1000) on the similarity gap
+  - Handles NaN edges from partial brain coverage via `_nanpearsonr()` (uses only jointly non-NaN edges)
+
+- **`reho_stability.py`:** ReHo run-to-run Pearson similarity matrix
+  - Computes all pairwise correlations across runs; reports mean, SD, and min/max
+  - Uses ROI-level ReHo vectors (recomputed from cleaned BOLD when pipeline-generated NIfTI stubs are empty)
+
+- **`ica_stability.py`:** ICA decomposition stability across random seeds and run subsets
+  - Seed sweep (5 seeds × 20 components): component is "robust" if |r| > 0.70 across all seed pairs
+  - Leave-one-run-out cross-validation: measures component recovery when each run is held out
+  - Reports fraction of robust components and mean cross-seed correlation
+
+- **`graph_stability.py`:** Graph-theoretic metric bootstrap and LORO-CV
+  - Thresholds FC matrices at configurable densities (default: 10%, 15%, 20%)
+  - Bootstraps modularity, global efficiency, and clustering coefficient (B=500)
+  - Reports 95% CIs and coefficient of variation (CV); flags CV > 20% as unstable
+
+- **`dfc_sensitivity.py`:** Dynamic FC window-size sensitivity
+  - Computes k-means state assignments (k=4) for window sizes 20, 30, 40 TR
+  - Pairwise Adjusted Rand Index (ARI) quantifies state-labeling agreement across window sizes
+  - Outputs per-window CSVs and a JSON ARI matrix
+
+- **`network_anchor.py`:** Canonical 7-network biological anchor (permutation test)
+  - Reorders FC matrix by Yeo-7 network labels (Vis, SomMot, DorsAttn, SalVentAttn, Limbic, Cont, Default)
+  - Computes mean within-network and between-network FC; tests gap via permutation (n=1000)
+  - Serves as a ground-truth biological plausibility check independent of between-subject comparisons
+
+- **`scorecard.py`:** Table 1 pass/fail scorecard
+  - Aggregates results from all six modules into a single CSV/Markdown table
+  - Pass criteria: FC gap CI excludes zero; ReHo mean r > 0.70; ≥18/20 ICA components robust; graph CV < 20%; dFC ARI > 0.30; network anchor p < 0.05
+  - Reports n/a (not underpowered) when N is too small for meaningful inference (e.g., LORO-CV with N≤3 run subsets)
 
 ---
 
@@ -474,22 +525,30 @@ def run_wavelet_coherence(manifest, config, output_dir):
 
 ### Test Suite Overview
 
-The test suite comprises 10 test modules covering all production code:
+The test suite comprises 18 test modules covering all production code including the reproducibility subpackage:
 
-| **Test Module** | **Coverage** | **Runtime** | **Data** |
-|---|---|---|---|
-| `test_bids_ingest.py` | Entity discovery, manifest generation | <5 sec | Synthetic BIDS tree |
-| `test_preprocessing.py` | Confound regression, filtering, smoothing | <10 sec | Synthetic 4D BOLD |
-| `test_qc.py` | FD, DVARS, tSNR computation | <5 sec | Synthetic motion traces |
-| `test_roi.py` | Atlas loading, NiftiLabelsMasker | <3 sec | Schaefer atlas + synthetic data |
-| `test_reho.py` | Kendall's W computation | <10 sec | Synthetic 3D volumes |
-| `test_connectivity.py` | Pearson/Fisher-z, sliding-window FC | <5 sec | Synthetic time series |
-| `test_ica.py` | FastICA, component matching | <15 sec | Synthetic 4D BOLD |
-| `test_pca_metrics.py` | PCA EVR computation | <2 sec | Synthetic 2D matrix |
-| `test_isc.py` | Leave-one-out ISC, permutation null | <10 sec | Synthetic multi-subject data |
-| `test_stats.py` | OLS design matrix, FDR correction | <5 sec | Synthetic outcome vectors |
+| **Test Module** | **Coverage** | **Data** |
+|---|---|---|
+| `test_preprocessing.py` | Confound regression, filtering, smoothing | Synthetic 4D BOLD |
+| `test_connectivity.py` | Pearson/Fisher-z, sliding-window FC (30 TR/5 TR) | Synthetic time series |
+| `test_isc.py` | Leave-one-out ISC, permutation null (shift ≥ 1) | Synthetic multi-subject data |
+| `test_stats.py` | OLS design matrix, FDR, ddof=1 standardization | Synthetic outcome vectors |
+| `test_pca_and_roi.py` | PCA EVR, atlas-based ROI extraction | Synthetic 2D matrix |
+| `test_viz_and_reho.py` | Visualization helpers, Kendall's W | Synthetic 3D volumes |
+| `test_scene_annotation.py` | Scene boundary alignment, ISC integration | Synthetic annotations |
+| `test_config_and_utils.py` | YAML loading, seed setting, path helpers | Config fixtures |
+| `test_sensitivity.py` | GSR/parcellation/window parameter sweeps | Synthetic BOLD |
+| `test_sanity.py` | Smoke tests for import and instantiation | None |
+| `test_fc_reproducibility.py` | NaN-robust within/between FC similarity | Synthetic FC matrices |
+| `test_ica_stability.py` | Seed sweep, LORO-CV component recovery | Synthetic time series |
+| `test_graph_stability.py` | Bootstrap CI, modularity CV | Synthetic adjacency matrices |
+| `test_dfc_sensitivity.py` | ARI across window sizes | Synthetic dFC states |
+| `test_network_anchor.py` | Yeo-7 reordering, permutation gap | Synthetic FC matrices |
+| `test_reho_stability.py` | Run-to-run ReHo Pearson similarity | Synthetic ReHo vectors |
+| `test_scorecard.py` | Pass/fail logic, n/a handling | Synthetic analysis outputs |
+| `test_run_reproducibility.py` | End-to-end reproducibility pipeline smoke test | Minimal synthetic data |
 
-**Total Runtime:** < 60 seconds (full suite)
+**Total Runtime:** < 90 seconds (full suite)
 
 ### Testing Strategy
 
