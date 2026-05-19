@@ -10,3 +10,11 @@ reports/tables/*
 !reports/tables/.gitkeep
 _archive/
 *.egg-info/
+
+# Review / editorial working documents — never commit these
+fmri_pipeline_review.docx
+jei_review.docx
+*_review.docx
+*_critique.docx
+FIXES_APPLIED.md
+CODE_REVIEW.md
