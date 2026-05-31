@@ -7,7 +7,7 @@ project:
 
 paths:
   bids_roots:
-    schizconnect: /path/to/your/fMRI/data/schizconnect
+    ds007318: /path/to/your/fMRI/data/ds007318
     algonauts: /path/to/your/fMRI/data/algonauts_friends
   derivatives_root: /path/to/your/fMRI/derivatives
   phenotypic_tsv: /path/to/your/fMRI/BDI/phenotypic.tsv

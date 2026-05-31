@@ -7,7 +7,7 @@ project:
 
 paths:
   bids_roots:
-    schizconnect: /path/to/schizconnect_bids
+    ds007318: /path/to/ds007318_bids
     algonauts: /path/to/algonauts_friends_bids
   derivatives_root: /path/to/derivatives
   phenotypic_tsv: /path/to/phenotypic.tsv

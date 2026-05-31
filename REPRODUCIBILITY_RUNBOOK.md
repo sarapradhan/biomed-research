@@ -2,7 +2,7 @@
 
 **Project:** fmri-pipeline — JEI Submission  
 **Dataset:** OpenNeuro ds007318 (N=3 subjects, 5 runs, task-removal)  
-**Data location:** ~/CB Mac/AppDev 2/Schizo/fMRI/derivatives/metrics
+**Data location:** /path/to/fmri-pipeline/derivatives/metrics
 
 ---
 
@@ -26,7 +26,7 @@ Runs the six reproducibility analyses that form Table 1 of the JEI manuscript:
 From the project root:
 
 ```bash
-cd ~/Docs/Claude/Projects/fMRI-Enhance
+cd /path/to/fmri-pipeline
 bash scripts/run_all_reproducibility.sh
 ```
 
@@ -53,7 +53,7 @@ python scripts/prep_reproducibility_inputs.py
 ```
 
 This:
-- Copies FC matrices from `~/CB Mac/…/metrics/static_fc/` to `data/repro_inputs/connectivity/`
+- Copies FC matrices from `/path/to/fmri-pipeline/derivatives/metrics/static_fc/` to `data/repro_inputs/connectivity/`
 - Recomputes ReHo ROI vectors from preprocessed BOLD (NIfTI stubs in the original output are empty)
 - Copies ROI timeseries to `data/repro_inputs/roi_timeseries/`
 - Runs temporal ICA (5 seeds + LORO-CV) from group ROI timeseries → `data/repro_inputs/ica/`

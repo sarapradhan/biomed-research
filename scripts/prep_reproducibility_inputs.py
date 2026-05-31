@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """prep_reproducibility_inputs.py — Stage pipeline outputs for reproducibility analyses.
 
-Reads the existing ds007318 pipeline outputs from CB Mac and writes them
+Reads the existing ds007318 pipeline outputs and writes them
 into the flat directory structure expected by the reproducibility modules
 (``src/fmri_pipeline/reproducibility/``).
 
@@ -36,7 +36,7 @@ Usage
     # From the fMRI-Enhance project root:
     python scripts/prep_reproducibility_inputs.py
 
-    # Override the data root (defaults to ~/CB Mac/AppDev 2/Schizo/fMRI):
+    # Override the data root (defaults to /path/to/fmri-pipeline/derivatives/metrics):
     python scripts/prep_reproducibility_inputs.py \
         --data-root "/path/to/derivatives/metrics"
 
@@ -77,8 +77,7 @@ log = logging.getLogger(__name__)
 # ── Defaults ─────────────────────────────────────────────────────────────────
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DATA_ROOT = (
-    Path.home() / "CB Mac" / "AppDev 2" / "Schizo" / "fMRI"
-    / "derivatives" / "metrics"
+    Path("/path/to/fmri-pipeline") / "derivatives" / "metrics"
 )
 DEFAULT_OUTPUT_ROOT = REPO_ROOT / "data" / "repro_inputs"
 

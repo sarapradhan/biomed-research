@@ -1,6 +1,6 @@
 {
   "started_at": "2026-05-18T06:17:05.920247+00:00",
-  "config_path": "/Users/rahul/Docs/Claude/Projects/fMRI-Enhance/config/reproducibility_real.yaml",
+  "config_path": "/path/to/fmri-pipeline/config/reproducibility_real.yaml",
   "config_hash": "cc57871e8f60dfd7",
   "git_sha": "0342a9a05097a588a947e7396f1c80dc40293699",
   "python": "3.14.3",

@@ -1,0 +1,11 @@
+# Validation Scorecard
+
+| Area | Check | Result | Status | Source |
+| --- | --- | --- | :---: | --- |
+| Reproducibility of FC | Within-subject run similarity | within=0.713, between=0.430, gap=0.283 [0.217, 0.348], p=0.067, d=5.732, N=2 | OK | `fc_within_vs_between.csv` |
+| ReHo stability | Cross-run similarity | within=0.968, between=0.513, gap=0.455 [0.436, 0.480], p=0.067, d=31.208, N=3 | OK | `reho_summary.csv` |
+| ICA stability | Component recovery across seeds | 20/20 components recovered (\|r\|>0.70), mean \|r\|=0.877, runs=5 | OK | `ica_stability_seeds.csv` |
+| ICA stability | Component recovery across run subsets | 0/20 components recovered (\|r\|>0.70), mean \|r\|=0.411, runs=3 | n/a (N≤3 run subsets; underpowered) | `ica_stability_lorocv.csv` |
+| Graph metric stability | Bootstrap consistency | modularity@density=0.15: 0.447 [0.391, 0.503] (CV=0.170, B=500) | OK | `graph_metrics_bootstrap.csv` |
+| Dynamic FC robustness | Multi-window sensitivity | runs=5; W=20: var=0.409, W=30: var=0.308, W=40: var=0.253; ARI(20-30)=0.454, ARI(20-40)=0.420, ARI(30-40)=0.572 | n/a | `dfc_sensitivity.json` |
+| Static FC plausibility | Canonical network organization | within=0.428, between=0.213, gap=0.216, p=1.0e-03, Q=n/a, networks=7 | OK | `network_anchor_summary.csv` |

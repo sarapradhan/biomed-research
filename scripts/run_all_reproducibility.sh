@@ -5,13 +5,13 @@
 # Runs from the fMRI-Enhance project root.
 #
 # Usage:
-#   cd ~/Docs/Claude/Projects/fMRI-Enhance
+#   cd /path/to/fmri-pipeline
 #   bash scripts/run_all_reproducibility.sh
 #
 # Optional flags:
 #   --skip-ica      Skip the ICA seed sweep (saves ~3–5 min)
 #   --only fc,reho  Run only named steps (passed to run_reproducibility.py)
-#   --data-root     Override data root (default: ~/CB Mac/AppDev 2/Schizo/fMRI/derivatives/metrics)
+#   --data-root     Override data root (default: /path/to/fmri-pipeline/derivatives/metrics)
 
 set -euo pipefail
 

@@ -1,27 +1,27 @@
 {
   "started_at": "2026-05-18T06:15:32.367926+00:00",
-  "data_root": "/Users/rahul/CB Mac/AppDev 2/Schizo/fMRI/derivatives/metrics",
-  "output_root": "/Users/rahul/Docs/Claude/Projects/fMRI-Enhance/data/repro_inputs",
+  "data_root": "/path/to/fmri-pipeline/derivatives/metrics",
+  "output_root": "/path/to/fmri-pipeline/data/repro_inputs",
   "stages": {
     "fc": {
       "n_files": 5,
-      "dir": "/Users/rahul/Docs/Claude/Projects/fMRI-Enhance/data/repro_inputs/connectivity"
+      "dir": "/path/to/fmri-pipeline/data/repro_inputs/connectivity"
     },
     "reho": {
       "n_files": 5,
-      "dir": "/Users/rahul/Docs/Claude/Projects/fMRI-Enhance/data/repro_inputs/reho",
+      "dir": "/path/to/fmri-pipeline/data/repro_inputs/reho",
       "atlas": "Schaefer-200"
     },
     "roi_timeseries": {
       "n_files": 5,
-      "dir": "/Users/rahul/Docs/Claude/Projects/fMRI-Enhance/data/repro_inputs/roi_timeseries"
+      "dir": "/path/to/fmri-pipeline/data/repro_inputs/roi_timeseries"
     },
     "roi_labels": {
-      "path": "/Users/rahul/Docs/Claude/Projects/fMRI-Enhance/data/repro_inputs/atlas/roi_labels.csv"
+      "path": "/path/to/fmri-pipeline/data/repro_inputs/atlas/roi_labels.csv"
     },
     "ica": {
       "n_files": 8,
-      "dir": "/Users/rahul/Docs/Claude/Projects/fMRI-Enhance/data/repro_inputs/ica",
+      "dir": "/path/to/fmri-pipeline/data/repro_inputs/ica",
       "method": "temporal_ica_on_roi_timeseries",
       "n_components": 20,
       "seeds": [

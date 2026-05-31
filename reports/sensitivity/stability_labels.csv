@@ -1,0 +1,10 @@
+name,gsr,schaefer_n_rois,dfc_window_trs,fd_threshold_mm,smoothing_fwhm_mm
+baseline,True,200,30,0.5,6.0
+gsr_off,False,200,30,0.5,6.0
+dfc_20TR,True,200,20,0.5,6.0
+dfc_45TR,True,200,45,0.5,6.0
+dfc_60TR,True,200,60,0.5,6.0
+FD_0.3mm,True,200,30,0.3,6.0
+FD_0.9mm,True,200,30,0.9,6.0
+smooth_4.0mm,True,200,30,0.5,4.0
+smooth_8.0mm,True,200,30,0.5,8.0

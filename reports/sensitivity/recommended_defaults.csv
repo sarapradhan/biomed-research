@@ -1,0 +1,12 @@
+Parameter,GSR,Atlas,dFC Window,FD Threshold,Smoothing,Runs Kept,Similarity to Baseline,Stability,Runtime (s)
+baseline,On,Schaefer-200,30 TRs,0.5 mm,6.0 mm,5,1.0000,Robust,206.9
+gsr_off,Off,Schaefer-200,30 TRs,0.5 mm,6.0 mm,5,0.8620,Fragile,185.2
+atlas_100,On,Schaefer-100,30 TRs,0.5 mm,6.0 mm,5,N/A (different atlas),Fragile,206.5
+atlas_400,On,Schaefer-400,30 TRs,0.5 mm,6.0 mm,5,N/A (different atlas),Fragile,207.2
+dfc_20TR,On,Schaefer-200,20 TRs,0.5 mm,6.0 mm,5,1.0000,Robust,204.2
+dfc_45TR,On,Schaefer-200,45 TRs,0.5 mm,6.0 mm,5,1.0000,Robust,205.9
+dfc_60TR,On,Schaefer-200,60 TRs,0.5 mm,6.0 mm,5,1.0000,Robust,206.1
+FD_0.3mm,On,Schaefer-200,30 TRs,0.3 mm,6.0 mm,5,0.9913,Robust,202.5
+FD_0.9mm,On,Schaefer-200,30 TRs,0.9 mm,6.0 mm,5,0.9968,Robust,205.8
+smooth_4.0mm,On,Schaefer-200,30 TRs,0.5 mm,4.0 mm,5,1.0000,Robust,202.3
+smooth_8.0mm,On,Schaefer-200,30 TRs,0.5 mm,8.0 mm,5,1.0000,Robust,208.5

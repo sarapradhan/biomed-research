@@ -7,14 +7,14 @@
 # NOTE: This config is intended for use with the standard run_pipeline.py
 # entry-point, which uses BIDSLayout to discover files.  Because the
 # ds007318 derivative layout does NOT include the expected
-#   <derivatives_root>/schizconnect/fmriprep/
+#   <derivatives_root>/ds007318/fmriprep/
 # sub-directory, you must first create a symlink:
 #
 #   ln -s /path/to/fMRIPrep/derivatives \
-#         /path/to/fMRIPrep/derivatives_bids/schizconnect/fmriprep
+#         /path/to/fMRIPrep/derivatives_bids/ds007318/fmriprep
 #
 # Then set:
-#   paths.bids_roots.schizconnect: /path/to/fMRIPrep
+#   paths.bids_roots.ds007318: /path/to/fMRIPrep
 #   paths.derivatives_root:        /path/to/fMRIPrep/derivatives_bids
 #
 # ── Preferred alternative ─────────────────────────────────────────────────────
@@ -37,9 +37,9 @@ paths:
   bids_roots:
     # Point to the fMRIPrep top-level directory (the one that contains
     # participants.tsv and the derivatives/ sub-folder).
-    schizconnect: /path/to/fMRIPrep
+    ds007318: /path/to/fMRIPrep
   # derivatives_root must resolve to a path where
-  #   <derivatives_root>/schizconnect/fmriprep/  exists and contains sub-XX/ folders.
+  #   <derivatives_root>/ds007318/fmriprep/  exists and contains sub-XX/ folders.
   # Create the required symlink first (see note above).
   derivatives_root: /path/to/fMRIPrep/derivatives_bids
   phenotypic_tsv: /path/to/fMRIPrep/phenotypic.tsv
@@ -108,7 +108,7 @@ isc:
   use_circular_shift_null: true
   random_state: 42
   # ISC will be skipped: the run_isc_step() function filters for dataset=="algonauts"
-  # (naturalistic movie data) and this dataset uses dataset=="schizconnect".
+  # (naturalistic movie data) and this dataset uses dataset=="ds007318".
 
 # Group stats intentionally disabled: all 3 subjects with derivatives are
 # labelled group=patient in participants.tsv. There is no control comparison.

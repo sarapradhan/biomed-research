@@ -18,3 +18,15 @@ jei_review.docx
 *_critique.docx
 FIXES_APPLIED.md
 CODE_REVIEW.md
+_internal_do_not_submit/
+pipeline_output/
+.sens_root
+.DS_Store
+output_dir/
+
+# Exploratory analyses not reported in the manuscript (scripts kept, outputs regenerable)
+reports/ica_component_labels.csv
+reports/ica_label_consistency.csv
+reports/ica_label_summary.txt
+reports/reho_regional_profile.csv
+reports/reho_regional_summary.txt
