@@ -104,7 +104,7 @@ The strongest validation result was the recovery of canonical large-scale networ
 
 An independent edge-level fingerprint analysis corroborated this result: the Spearman correlation between Fisher-*z* edge values and same-network membership was rho = 0.32 (95% CI [0.31, 0.34]), confirming that same-network ROI pairs are systematically more connected than cross-network pairs across the full edge distribution. Within-network FC was highest for the Visual (Fisher-*z* M = 0.72) and Dorsal Attention (M = 0.49) networks, consistent with strong local synchrony in these systems, and the network rank ordering matched the expected canonical hierarchy perfectly (rank consistency rho = 1.00). Because the data are task fMRI treated as pseudo-resting-state, this is best read as evidence of biologically plausible network structure rather than proof that task-state FC matches resting-state architecture (Figure 1).
 
-![Group-average functional connectivity matrix (N = 3 subjects, 5 runs, ds007318). **Panel A:** 200×200 FC heatmap ordered by Yeo-7 network membership (Schaefer-200 parcellation, Fisher-z scale, clipped to [−0.5, 1.5]); axis colour bars denote network identity. The block-diagonal structure reflects canonical large-scale network organization. **Panel B:** Mean within-network FC per canonical network; error bars show standard deviation across the 5 runs. All networks exceed the between-network mean (dashed line; M = 0.21). Vis = Visual; SomMot = Somatomotor; DorsAttn = Dorsal Attention; SalVentAttn = Salience/Ventral Attention; Cont = Frontoparietal/Control; DMN = Default Mode.](figures/fc_matrix_canonical.png)
+![**Figure 1.** Group-average functional connectivity matrix (N = 3 subjects, 5 runs, ds007318). **Panel A:** 200×200 FC heatmap ordered by Yeo-7 network membership (Schaefer-200 parcellation, Fisher-z scale, clipped to [−0.5, 1.5]); axis colour bars denote network identity. The block-diagonal structure reflects canonical large-scale network organization. **Panel B:** Mean within-network FC per canonical network; error bars show standard deviation across the 5 runs. All networks exceed the between-network mean (dashed line; M = 0.21). Vis = Visual; SomMot = Somatomotor; DorsAttn = Dorsal Attention; SalVentAttn = Salience/Ventral Attention; Cont = Frontoparietal/Control; DMN = Default Mode.](figures/fc_matrix_canonical.png)
 
 ### Internal reproducibility analyses
 
@@ -136,7 +136,7 @@ Global signal regression was the only parameter that substantially altered conne
 
 Dynamic FC variability (upper-triangle SD over time) decreased monotonically with window size (*W* = 20 TR: 0.409; 30 TR: 0.308; 40 TR: 0.253), as expected from the averaging properties of longer windows. State-assignment consistency across window lengths was moderate (ARI 0.42–0.57), reflecting the dependence of sliding-window clustering on temporal resolution. Dynamic FC outputs are included for exploratory characterization only and are not the basis for state-based inference at this sample size.
 
-![Sensitivity analysis from ds007318 (N = 3, 5 runs). **A.** Pairwise Spearman correlation matrix for static FC vectors across 9 parameter conditions (Schaefer-200, varying GSR, scrubbing threshold, window length, smoothing kernel); all conditions except GSR-off produce ρ > 0.99. **B.** Parameter impact as mean deviation from baseline (1 − ρ); GSR is the dominant source of analytical variability. **C.** Summary of key findings.](sensitivity_figures_real/joss_figure_sensitivity_combined.png)
+![**Figure 2.** Sensitivity analysis from ds007318 (N = 3, 5 runs). **A.** Pairwise Spearman correlation matrix for static FC vectors across 9 parameter conditions (Schaefer-200, varying GSR, scrubbing threshold, window length, smoothing kernel); all conditions except GSR-off produce ρ > 0.99. **B.** Parameter impact as mean deviation from baseline (1 − ρ); GSR is the dominant source of analytical variability. **C.** Summary of key findings.](sensitivity_figures_real/joss_figure_sensitivity_combined.png)
 
 ---
 
@@ -174,7 +174,7 @@ Several limitations constrain these conclusions. First, the validation sample wa
 
 ## Data and Code Availability
 
-The input fMRI dataset is publicly available as OpenNeuro ds007318 (https://openneuro.org/datasets/ds007318) [7], distributed under a CC0 license. 〈TO VERIFY BEFORE SUBMISSION: insert the public repository URL, the exact software version tag, and the archived Zenodo DOI only after confirming each resolves correctly — do not state a DOI or CI result that has not been confirmed.〉 The pipeline configuration file, reproducibility configuration, QC table, and sensitivity outputs (`recommended_defaults.csv`, `stability_matrix_static_fc.npy`, `stability_labels.csv`, `cross_atlas_summary.csv`) used to generate the reported results are included in the archived repository.
+The input fMRI dataset is publicly available as OpenNeuro ds007318 (https://openneuro.org/datasets/ds007318) [7], distributed under a CC0 license. The source code for `fmri-pipeline` is openly available at https://github.com/sarapradhan/biomed-research (release v1.0.1, MIT License) and is archived at https://doi.org/10.5281/zenodo.20280072. The pipeline configuration files, reproducibility configuration, QC table, and sensitivity outputs (`recommended_defaults.csv`, `stability_matrix_static_fc.npy`, `stability_labels.csv`, `cross_atlas_summary.csv`) used to generate the reported results are included in the archived repository.
 
 ---
 
@@ -202,7 +202,7 @@ The author used generative AI (Anthropic's Claude) as a writing and coding assis
 
 [6] Mehta, K., Salo, T., Madison, T. J., et al. (2024). XCP-D: A robust pipeline for the post-processing of fMRI data. *Imaging Neuroscience, 2*, 1–26. https://doi.org/10.1162/imag_a_00257
 
-[7] Wang, T., Li, Y., & Zhao, X. *fMRI Study Dataset* [Data set]. OpenNeuro ds007318. https://doi.org/10.18112/openneuro.ds007318.v1.0.0  〈confirm author list and year from OpenNeuro metadata before submission〉
+[7] Wang, T., Li, Y., & Zhao, X. *fMRI Study Dataset* [Data set]. OpenNeuro ds007318. https://doi.org/10.18112/openneuro.ds007318.v1.0.0
 
 [8] Schaefer, A., Kong, R., Gordon, E. M., et al. (2018). Local-global parcellation of the human cerebral cortex from intrinsic functional connectivity MRI. *Cerebral Cortex, 28*(9), 3095–3114. https://doi.org/10.1093/cercor/bhx179
 
