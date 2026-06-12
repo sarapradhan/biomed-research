@@ -30,3 +30,10 @@ reports/ica_label_consistency.csv
 reports/ica_label_summary.txt
 reports/reho_regional_profile.csv
 reports/reho_regional_summary.txt
+
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.log
+*.out

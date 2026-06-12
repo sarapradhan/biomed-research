@@ -8,5 +8,5 @@ dfc_45TR,On,Schaefer-200,45 TRs,0.5 mm,6.0 mm,5,1.0000,Robust,205.9
 dfc_60TR,On,Schaefer-200,60 TRs,0.5 mm,6.0 mm,5,1.0000,Robust,206.1
 FD_0.3mm,On,Schaefer-200,30 TRs,0.3 mm,6.0 mm,5,0.9913,Robust,202.5
 FD_0.9mm,On,Schaefer-200,30 TRs,0.9 mm,6.0 mm,5,0.9968,Robust,205.8
-smooth_4.0mm,On,Schaefer-200,30 TRs,0.5 mm,4.0 mm,5,1.0000,Robust,202.3
-smooth_8.0mm,On,Schaefer-200,30 TRs,0.5 mm,8.0 mm,5,1.0000,Robust,208.5
+smooth_4.0mm,On,Schaefer-200,30 TRs,0.5 mm,4.0 mm,5,0.9970,Robust,202.3
+smooth_8.0mm,On,Schaefer-200,30 TRs,0.5 mm,8.0 mm,5,0.9973,Robust,208.5

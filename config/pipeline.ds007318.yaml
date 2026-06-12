@@ -33,6 +33,18 @@ project:
   debug_mode: false
   debug_subject_limit: null
 
+# Source dataset provenance. ds007318 has a single published OpenNeuro
+# snapshot (v1.0.0; DOI 10.18112/openneuro.ds007318.v1.0.0), confirmed via
+# DataCite as the only versioned DOI. Recorded here so the snapshot used is
+# verifiable from the repository.
+dataset:
+  id: ds007318
+  source: OpenNeuro
+  version: "1.0.0"
+  doi: 10.18112/openneuro.ds007318.v1.0.0
+  url: https://openneuro.org/datasets/ds007318/versions/1.0.0
+  downloaded: "2026-02"
+
 paths:
   bids_roots:
     # Point to the fMRIPrep top-level directory (the one that contains

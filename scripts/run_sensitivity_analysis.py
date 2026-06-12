@@ -280,8 +280,11 @@ def run_single_condition(
                 cfg=cfg,
             )
 
-            # ROI extraction on unsmoothed image
-            ts = extract_roi_timeseries(unsm, atlas_img, _TR, cfg)
+            # ROI extraction on the SMOOTHED image. Smoothing FWHM is one of the
+            # tested sensitivity parameters (cfg["preprocessing"]["smoothing_fwhm_mm"]),
+            # so the smoothed output must be used here; extracting from the unsmoothed
+            # image makes every smoothing condition identical (a bug fixed in v1.0.2).
+            ts = extract_roi_timeseries(sm, atlas_img, _TR, cfg)
 
             # Static FC
             sfc = static_fc(ts)
