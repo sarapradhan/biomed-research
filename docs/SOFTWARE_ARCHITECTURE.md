@@ -118,7 +118,7 @@ The pipeline organizes 16 core modules plus a 7-module reproducibility subpackag
 
 - **`isc.py` (120 lines):** Inter-subject correlation (ISC) for synchrony quantification
   - Implements leave-one-out ISC: correlation between each subject's time series and group average
-  - Establishes significance via circular time-shift permutation null (500 permutations, FDR correction at α=0.05)
+  - Establishes significance via circular time-shift permutation null (1000 permutations, FDR correction at α=0.05)
   - Outputs subject-level and group-level NIfTI maps with correlation, p-value, and q-value volumes
   - Specialized for movie-watching paradigms; identifies voxels with synchronous activation across subjects
 

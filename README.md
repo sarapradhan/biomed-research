@@ -27,7 +27,7 @@ A modular, YAML-configured Python pipeline for multi-scale functional brain netw
 
 ## Key Features
 
-- **8 analysis modules** covering local synchrony, static/dynamic connectivity, decomposition, intersubject correlation, and a full reproducibility validation suite
+- **7 feature modules** covering local synchrony (ReHo), static and dynamic connectivity, spatial ICA, PCA, and intersubject correlation (matching the diagram above: `roi`, `reho`, `connectivity`, `ica`, `pca_metrics`, `isc`, plus `scene_annotation` for optional narrative-aligned ISC analysis), backed by a dedicated reproducibility validation suite — see [Software Architecture](docs/SOFTWARE_ARCHITECTURE.md) for the full per-file breakdown (16 core modules including ingestion/QC/stats + a 7-file reproducibility subpackage)
 - **YAML-driven configuration** — switch datasets, parameters, and analysis options without touching code
 - **Cross-dataset portability** — validated on CNeuroMod Friends (naturalistic movie) and OpenNeuro ds007318 (task/resting-state) without code changes
 - **Reproducibility suite** — six dedicated validation analyses (FC within/between, ReHo stability, ICA stability, graph metric bootstrap, dynamic FC window sensitivity, canonical network anchor)
@@ -210,18 +210,19 @@ biomed-research/
 
 ## Reproducibility Suite (Table 1)
 
-Six analyses validate pipeline stability on OpenNeuro ds007318 (N=3, 5 runs total):
+Six analyses validate pipeline stability on OpenNeuro ds007318 (N=3, 5 runs total). The FC-reproducibility and ReHo pass criteria below are met by bootstrap CIs built from only 2 within-subject run pairs — the manuscript reports these as **suggestive, not confirmatory** evidence, and the current status labels below should be read with that caveat, not as precise interval estimates:
 
-| Analysis | Module | Pass Criterion |
-|----------|--------|---------------|
-| FC within > between-subject | `fc_reproducibility` | Bootstrap CI on gap excludes zero |
-| ReHo run-to-run stability | `reho_stability` | Mean r > 0.70 across run pairs |
-| ICA component recovery | `ica_stability` | ≥18/20 components robust across seeds |
-| Graph metric bootstrap | `graph_stability` | Modularity CV < 20% |
-| Dynamic FC window sensitivity | `dfc_sensitivity` | ARI > 0.30 across window sizes |
-| Canonical network anchor | `network_anchor` | Within > between-network FC, p < 0.05 |
+| Analysis | Module | Pass Criterion | Status |
+|----------|--------|---------------|:---:|
+| FC within > between-subject | `fc_reproducibility` | Bootstrap CI on gap excludes zero | ✓ (suggestive, n=2) |
+| ReHo run-to-run stability | `reho_stability` | Mean r > 0.70 across run pairs | ✓ (suggestive, n=2) |
+| ICA seed stability | `ica_stability` | ≥18/20 components robust across seeds | ✓ (seed only) |
+| ICA cross-run stability (LORO-CV) | `ica_stability` | ≥18/20 components robust across 3 leave-one-run-out subsets | ✗ fails (mean \|r\|=0.41, N≤3 subsets is underpowered) |
+| Graph metric bootstrap | `graph_stability` | Modularity CV < 20% | ✓ |
+| Dynamic FC window sensitivity | `dfc_sensitivity` | ARI > 0.30 across window sizes | n/a (exploratory) |
+| Canonical network anchor | `network_anchor` | Within > between-network FC, p < 0.05 | ✓ (spatial autocorrelation not ruled out — see Limitations) |
 
-See [REPRODUCIBILITY_RUNBOOK.md](REPRODUCIBILITY_RUNBOOK.md) for full instructions.
+Seed stability and cross-run (LORO-CV) stability of the ICA temporal-ICA proxy are tracked as separate rows so a strong seed result cannot mask the weaker cross-run result. See [REPRODUCIBILITY_RUNBOOK.md](REPRODUCIBILITY_RUNBOOK.md) for full instructions.
 
 ## Data Requirements
 
@@ -259,7 +260,7 @@ The pipeline expects fMRIPrep derivatives organized in BIDS format:
 
 If you use this pipeline in your work, please cite:
 
-> Pradhan, S. (2026). Building a Reproducible Pipeline for Functional Brain Network Analysis During Naturalistic Movie Viewing. *Journal of Emerging Investigators.* https://github.com/sarapradhan/biomed-research
+> Pradhan, S. (2026). A Configuration-Driven Python Pipeline for Reproducible Functional Brain Network Analysis: Internal Validation on a Public fMRI Dataset. *Journal of Emerging Investigators.* https://github.com/sarapradhan/biomed-research
 
 ## License
 
