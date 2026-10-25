@@ -1,4 +1,4 @@
-"""Validation scorecard generator (JEI revision Table 1).
+"""Validation scorecard generator (manuscript Table 1).
 
 Reads the per-module summary CSVs produced by the other reproducibility
 modules and assembles a single Markdown + CSV scorecard mapping each

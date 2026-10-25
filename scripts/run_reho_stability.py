@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run the ReHo run-to-run stability analysis (JEI revision Step 1.2).
+"""Run the ReHo run-to-run stability analysis (revision Step 1.2).
 
 Reads per-subject, per-run ReHo ROI vectors saved as
 ``sub-<id>_run-<id>_reho.npy`` under ``paths.reho_input_dir`` from the

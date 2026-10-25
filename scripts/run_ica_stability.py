@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run the ICA component stability analysis (JEI revision Step 1.3).
+"""Run the ICA component stability analysis (revision Step 1.3).
 
 Loads ICA decompositions saved as ``{tag}_ica_components.npy`` from
 two sub-directories under ``paths.ica_input_dir``:

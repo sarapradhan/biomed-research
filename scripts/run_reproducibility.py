@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""End-to-end reproducibility harness (JEI revision Phase 1 + 2 + 3).
+"""End-to-end reproducibility harness (revision Phase 1 + 2 + 3).
 
 Walks ``execution.run_order`` from ``config/reproducibility.yaml`` and
 dispatches each named step to its module's ``run(config)`` entry point.

@@ -1,6 +1,6 @@
 # Reproducible fMRI Pipeline for Functional Brain Network Analysis
 
-A modular, YAML-configured Python pipeline for multi-scale functional brain network analysis. Built for naturalistic (movie-viewing) and resting-state fMRI data, validated on independent datasets without code modification.
+A modular, YAML-configured Python pipeline for multi-scale functional brain network analysis. Built for naturalistic (movie-viewing) and resting-state fMRI data. Developed on a CNeuroMod *Friends* subset and validated, without code modification, on an independent public dataset (OpenNeuro ds007318).
 
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/sarapradhan/biomed-research)
 
@@ -27,9 +27,9 @@ A modular, YAML-configured Python pipeline for multi-scale functional brain netw
 
 ## Key Features
 
-- **7 feature modules** covering local synchrony (ReHo), static and dynamic connectivity, spatial ICA, PCA, and intersubject correlation (matching the diagram above: `roi`, `reho`, `connectivity`, `ica`, `pca_metrics`, `isc`, plus `scene_annotation` for optional narrative-aligned ISC analysis), backed by a dedicated reproducibility validation suite — see [Software Architecture](docs/SOFTWARE_ARCHITECTURE.md) for the full per-file breakdown (16 core modules including ingestion/QC/stats + a 7-file reproducibility subpackage)
+- **7 feature modules** covering local synchrony (ReHo), static and dynamic connectivity, spatial ICA, PCA, and intersubject correlation (matching the diagram above: `roi`, `reho`, `connectivity`, `ica`, `pca_metrics`, `isc`, plus `scene_annotation` for optional narrative-aligned ISC analysis), backed by a dedicated reproducibility validation suite — see [Software Architecture](docs/SOFTWARE_ARCHITECTURE.md) for the full per-file breakdown (15 core modules including ingestion/QC/stats + a 7-file reproducibility subpackage)
 - **YAML-driven configuration** — switch datasets, parameters, and analysis options without touching code
-- **Cross-dataset portability** — validated on CNeuroMod Friends (naturalistic movie) and OpenNeuro ds007318 (task/resting-state) without code changes
+- **Cross-dataset portability** — developed on CNeuroMod *Friends* (naturalistic movie viewing), then validated on OpenNeuro ds007318 (working-memory task, analyzed as pseudo-resting-state) without code changes
 - **Reproducibility suite** — six dedicated validation analyses (FC within/between, ReHo stability, ICA stability, graph metric bootstrap, dynamic FC window sensitivity, canonical network anchor)
 - **Sensitivity analysis** — built-in robustness benchmark testing GSR, parcellation, dFC windows, scrubbing thresholds, and smoothing kernels
 - **Deterministic by default** — pinned seeds, timestamped manifests, fMRIPrep-compatible preprocessing
@@ -88,7 +88,7 @@ python scripts/run_sensitivity_analysis.py \
     --output-root /path/to/output
 ```
 
-**Reproducibility validation suite (JEI Table 1):**
+**Reproducibility validation suite (manuscript Table 1):**
 ```bash
 # One-command run (recommended):
 bash scripts/run_all_reproducibility.sh
@@ -104,7 +104,8 @@ cat reports/reproducibility/scorecard.md
 ```
 biomed-research/
 ├── config/
-│   ├── pipeline.yaml                 # Main config (SchizConnect)
+│   ├── pipeline.yaml                 # Main config (default parameters; set paths for your data)
+│   ├── pipeline.example.yaml         # Annotated example config
 │   ├── pipeline.ds007318.yaml        # OpenNeuro ds007318 pilot config
 │   ├── pipeline.algonauts.yaml       # CNeuroMod naturalistic ISC config
 │   ├── pipeline.cneuromod_isc.yaml   # Track 2: ISC extension config
@@ -128,7 +129,11 @@ biomed-research/
 │   ├── run_ica_stability.py          # ICA seed stability runner
 │   ├── run_isc_extension.py          # ISC extension runner
 │   ├── run_network_anchor.py         # Canonical network anchor runner
-│   └── run_reho_stability.py         # ReHo run-to-run stability runner
+│   ├── run_reho_stability.py         # ReHo run-to-run stability runner
+│   ├── fc_fingerprint.py             # Edge-level network-anchor corroboration (manuscript)
+│   ├── fc_matrix_figure.py           # Group-average FC matrix figure (manuscript)
+│   ├── ica_label_components.py       # ICA component network labeling (manuscript)
+│   └── reho_regional_profile.py      # ReHo regional profile summary (manuscript)
 ├── src/fmri_pipeline/
 │   ├── pipeline.py                   # Pipeline orchestration
 │   ├── config.py                     # YAML config loader
@@ -182,6 +187,10 @@ biomed-research/
 │       ├── graph_metrics_bootstrap.csv
 │       ├── dfc_sensitivity.json
 │       └── network_anchor_summary.csv
+├── reports/sensitivity/              # Sensitivity analysis outputs (11 conditions)
+├── figures/                          # Manuscript figures
+├── sensitivity_figures_real/         # Combined sensitivity figure
+├── paper.md / paper.tex / paper.bib  # Manuscript source (unpublished)
 ├── docs/
 │   ├── PROJECT_OVERVIEW.md
 │   ├── SOFTWARE_ARCHITECTURE.md
@@ -222,7 +231,7 @@ Six analyses validate pipeline stability on OpenNeuro ds007318 (N=3, 5 runs tota
 | Dynamic FC window sensitivity | `dfc_sensitivity` | ARI > 0.30 across window sizes | n/a (exploratory) |
 | Canonical network anchor | `network_anchor` | Within > between-network FC, p < 0.05 | ✓ (spatial autocorrelation not ruled out — see Limitations) |
 
-Seed stability and cross-run (LORO-CV) stability of the ICA temporal-ICA proxy are tracked as separate rows so a strong seed result cannot mask the weaker cross-run result. See [REPRODUCIBILITY_RUNBOOK.md](REPRODUCIBILITY_RUNBOOK.md) for full instructions.
+Seed stability and cross-run (LORO-CV) stability of the ICA temporal-ICA proxy are tracked as separate rows so a strong seed result cannot mask the weaker cross-run result. The generated `scorecard.md` labels the cross-run row "n/a (underpowered)"; this README reports it as a failure so the result is not read as passing. See [REPRODUCIBILITY_RUNBOOK.md](REPRODUCIBILITY_RUNBOOK.md) for full instructions.
 
 ## Data Requirements
 
@@ -236,19 +245,21 @@ The pipeline expects fMRIPrep derivatives organized in BIDS format:
         sub-XX_ses-YY_task-*_desc-confounds_timeseries.tsv
 ```
 
-## Validated Datasets
+## Datasets
 
-| Dataset | Type | Subjects | Runs | Use Case |
-|---------|------|----------|------|----------|
-| CNeuroMod Friends | Naturalistic movie-viewing | 4+ | Multiple | ISC, dynamic FC, scene-linked analysis |
-| OpenNeuro ds007318 | Working-memory (pseudo-resting) | 3 | 5 total | Reproducibility validation, sensitivity analysis |
+Only OpenNeuro ds007318 has published validation results in this repository.
+
+| Dataset | Type | Subjects | Runs | Role |
+|---------|------|----------|------|------|
+| CNeuroMod Friends | Naturalistic movie-viewing | Subset | Subset | Pipeline development; not separately validated |
+| OpenNeuro ds007318 | Working-memory (pseudo-resting) | 3 | 5 total | Validation: reproducibility suite and sensitivity analysis |
 | SchizConnect | Clinical resting-state | Variable | Variable | SZ vs HC group comparison (code-ready; awaiting data) |
 
 > **Note on ds007318:** Participants are drawn from a clinical population (working-memory removal paradigm, Northwest Normal University). The dataset contains no healthy control arm; group-level statistics are disabled for this dataset. Results are treated as feasibility demonstrations.
 
 ## Documentation
 
-- **[DeepWiki](https://deepwiki.com/sarapradhan/biomed-research)** — Interactive documentation: architecture, pipeline modules, datasets, and API reference
+- **[DeepWiki](https://deepwiki.com/sarapradhan/biomed-research)** — Interactive documentation generated automatically by a third-party AI tool; it may lag behind or differ from this repository
 - **[Reproducibility Runbook](REPRODUCIBILITY_RUNBOOK.md)** — Step-by-step guide to running the validation suite
 - **[Limitations](LIMITATIONS.md)** — Known constraints, scope boundaries, and methodological caveats
 - **[Project Overview](docs/PROJECT_OVERVIEW.md)** — Scientific motivation and design rationale
@@ -258,9 +269,17 @@ The pipeline expects fMRIPrep derivatives organized in BIDS format:
 
 ## Citation
 
-If you use this pipeline in your work, please cite:
+If you use this pipeline in your work, please cite the archived software:
 
-> Pradhan, S. (2026). A Configuration-Driven Python Pipeline for Reproducible Functional Brain Network Analysis: Internal Validation on a Public fMRI Dataset. *Journal of Emerging Investigators.* https://github.com/sarapradhan/biomed-research
+> Pradhan, S. (2026). *fmri-pipeline* (Version 1.0.2) [Computer software]. Zenodo. https://doi.org/CONCEPT_DOI
+
+The accompanying manuscript, *A Configuration-Driven Python Pipeline for Reproducible Functional Brain Network Analysis: Internal Validation on a Public fMRI Dataset*, is unpublished. Its source is in `paper.md`.
+
+## Acknowledgements
+
+The author thanks Arefeh Sherafati, Research Scientist at St. Jude Children's Research Hospital, for guidance and feedback, and the team that collected and shared OpenNeuro ds007318.
+
+Generative AI (Anthropic's Claude) was used as a writing and coding assistant. All scientific content, analyses, interpretations, and final code were designed, reviewed, and verified by the author.
 
 ## License
 

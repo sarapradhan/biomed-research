@@ -18,8 +18,9 @@ bids:
   space: MNI152NLin2009cAsym
   desc_preproc: preproc
   use_aroma: false
-  # "removal" is the SchizConnect-specific BIDS task label for resting-state
-  # runs in that dataset. Standard resting-state datasets use task_rest: rest.
+  # "removal" is the task label of the OpenNeuro ds007318 working-memory runs,
+  # analyzed here as pseudo-resting-state. Standard resting-state datasets use
+  # task_rest: rest.
   task_rest: removal
   task_movie: movie
 

@@ -182,7 +182,7 @@ On this small public subset, `fmri-pipeline` recovered the canonical within- ver
 
 ## Data and Code Availability
 
-The input fMRI dataset is publicly available as OpenNeuro ds007318 (https://openneuro.org/datasets/ds007318) [7], distributed under a CC0 license. The source code for `fmri-pipeline` is openly available at https://github.com/sarapradhan/biomed-research (release v1.0.1, MIT License) and is archived at https://doi.org/10.5281/zenodo.20280072. The pipeline configuration files (`config/`), the per-module reproducibility outputs and validation scorecard (`reports/reproducibility/`, including `scorecard.csv`, `reho_summary.csv`, `fc_within_vs_between.csv`, `network_anchor_summary.csv`, and `graph_metrics_bootstrap.csv`), and the combined sensitivity figure (updated per the Figure 2 revision described above) used to generate the reported results are included in the archived repository.
+The input fMRI dataset is publicly available as OpenNeuro ds007318 (https://openneuro.org/datasets/ds007318) [7], distributed under a CC0 license. The source code for `fmri-pipeline` is openly available at https://github.com/sarapradhan/biomed-research (release v1.0.1, MIT License) and is archived at https://doi.org/CONCEPT_DOI. The pipeline configuration files (`config/`), the per-module reproducibility outputs and validation scorecard (`reports/reproducibility/`, including `scorecard.csv`, `reho_summary.csv`, `fc_within_vs_between.csv`, `network_anchor_summary.csv`, and `graph_metrics_bootstrap.csv`), and the combined sensitivity figure (updated per the Figure 2 revision described above) used to generate the reported results are included in the archived repository.
 
 ---
 

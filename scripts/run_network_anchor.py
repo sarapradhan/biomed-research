@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run the canonical-network biological anchor (JEI revision Phase 3).
+"""Run the canonical-network biological anchor (revision Phase 3).
 
 Reads a group-mean FC matrix (or computes it from a directory of per-run
 FC matrices) and a ROI-labels file, assigns each ROI to a canonical

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""ICA Component Biological Labeling — JEI Manuscript Upgrade, Step 3.
+"""ICA Component Biological Labeling — Manuscript Upgrade, Step 3.
 
 Labels each of the 20 temporal ICA components (k=20, Schaefer-200 ROI
 timeseries) according to the canonical Yeo-7 large-scale network they

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the JEI revision validation scorecard from existing module outputs.
+"""Build the validation scorecard from existing module outputs.
 
 Useful as a standalone command when the per-module CSVs are already on
 disk and you only want to (re)render the scorecard. The

@@ -1,4 +1,4 @@
-"""Dynamic FC window-size sensitivity (Phase 2 of the JEI revision plan).
+"""Dynamic FC window-size sensitivity (Phase 2 of the revision plan).
 
 For each ROI timeseries, runs sliding-window dynamic FC at multiple window
 sizes (default 20, 30, 40 TR), summarises FC variability across windows,

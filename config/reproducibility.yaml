@@ -98,7 +98,7 @@ network_anchor:
   output_matrix: network_anchor_reordered.npy
 
 # ---------------------------------------------------------------------------
-# Validation scorecard — Table 1 of the JEI revision
+# Validation scorecard — Table 1 of the manuscript
 # ---------------------------------------------------------------------------
 scorecard:
   enabled: true

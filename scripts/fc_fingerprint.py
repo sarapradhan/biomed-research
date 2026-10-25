@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""FC Fingerprint Comparison — JEI Manuscript Upgrade, Step 1.
+"""FC Fingerprint Comparison — Manuscript Upgrade, Step 1.
 
 Computes a quantitative external validation of the group-average FC
 structure by measuring how well the observed connectivity pattern

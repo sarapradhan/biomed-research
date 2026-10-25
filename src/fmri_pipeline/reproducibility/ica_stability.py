@@ -5,7 +5,7 @@ across leave-one-run-out subsets. Matches components across runs using
 the Hungarian algorithm on absolute spatial correlation (ICA components
 are sign-ambiguous, so we maximize ``|r|`` rather than ``r``), and
 reports how many components are recovered with mean spatial r above a
-configurable threshold (default 0.7). Implements Step 1.3 of the JEI
+configurable threshold (default 0.7). Implements Step 1.3 of the
 revision plan.
 
 Primary outputs:

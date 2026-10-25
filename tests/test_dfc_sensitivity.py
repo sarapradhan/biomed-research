@@ -1,4 +1,4 @@
-"""Synthetic-data tests for dfc_sensitivity (JEI revision Phase 2)."""
+"""Synthetic-data tests for dfc_sensitivity (revision Phase 2)."""
 from __future__ import annotations
 
 import csv

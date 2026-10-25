@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Group-Average FC Matrix Figure — JEI Manuscript Upgrade, Step 2.
+"""Group-Average FC Matrix Figure — Manuscript Upgrade, Step 2.
 
 Produces a two-panel publication-quality figure:
 

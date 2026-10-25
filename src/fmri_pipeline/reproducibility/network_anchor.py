@@ -1,4 +1,4 @@
-"""Canonical-network biological anchor (Phase 3 of the JEI revision plan).
+"""Canonical-network biological anchor (Phase 3 of the revision plan).
 
 Maps ROIs to canonical networks (Yeo-7 by default for Schaefer atlases),
 reorders the group-mean static FC matrix by network, and quantifies the

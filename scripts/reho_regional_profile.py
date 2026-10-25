@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""ReHo Regional Profile Description — JEI Manuscript Upgrade, Step 4.
+"""ReHo Regional Profile Description — Manuscript Upgrade, Step 4.
 
 Extracts the group-average ReHo profile across Schaefer-200 ROIs and
 provides a biological interpretation by:

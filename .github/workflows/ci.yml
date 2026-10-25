@@ -8,7 +8,7 @@ on:
 
 # Confirms that: (a) all 382 tests pass on both macOS and Ubuntu,
 # and (b) key numeric outputs match between platforms, satisfying
-# the cross-platform reproducibility claim in the JEI manuscript.
+# the cross-platform reproducibility claim in the manuscript.
 
 jobs:
   test:

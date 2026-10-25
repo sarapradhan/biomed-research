@@ -1,4 +1,4 @@
-"""Synthetic-data tests for network_anchor (JEI revision Phase 3).
+"""Synthetic-data tests for network_anchor (revision Phase 3).
 
 The test design builds FC matrices with controlled block structure and
 verifies that the analysis recovers the expected verdict (within > between

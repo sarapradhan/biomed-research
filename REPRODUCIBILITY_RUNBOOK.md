@@ -1,6 +1,6 @@
 # Reproducibility Analysis Runbook
 
-**Project:** fmri-pipeline — JEI Submission  
+**Project:** fmri-pipeline — manuscript reproducibility  
 **Dataset:** OpenNeuro ds007318 (N=3 subjects, 5 runs, task-removal)  
 **Data location:** /path/to/fmri-pipeline/derivatives/metrics
 
@@ -8,7 +8,7 @@
 
 ## What this does
 
-Runs the six reproducibility analyses that form Table 1 of the JEI manuscript:
+Runs the six reproducibility analyses that form Table 1 of the manuscript:
 
 | Analysis | Module | What it tests |
 |---|---|---|

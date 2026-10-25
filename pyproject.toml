@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fmri-pipeline"
-version = "0.1.0"
+version = "1.0.2"
 description = "A modular, YAML-configured pipeline for multi-scale functional brain network analysis"
 readme = "README.md"
 license = {text = "MIT"}

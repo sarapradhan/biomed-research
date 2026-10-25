@@ -2,8 +2,7 @@
 
 Computes ROI-level ReHo summaries per run, correlates run-wise ReHo
 vectors within subject and between subjects, and tests that the within
-> between gap is significant. Implements Step 1.2 of the JEI revision
-plan (``_archive/docs/revision/JEI_Revision_Implementation_Plan.md``).
+> between gap is significant. Implements Step 1.2 of the revision plan.
 
 The statistical procedure mirrors ``fc_reproducibility``: Fisher-z
 transform before parametric/non-parametric tests, one-sided

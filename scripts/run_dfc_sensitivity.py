@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run dynamic FC window-size sensitivity (JEI revision Phase 2).
+"""Run dynamic FC window-size sensitivity (revision Phase 2).
 
 Sweeps dynamic FC over a list of window sizes (default 20, 30, 40 TR),
 clusters each window's FC into ``k`` states with k-means, and computes
