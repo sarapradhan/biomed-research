@@ -271,7 +271,7 @@ Only OpenNeuro ds007318 has published validation results in this repository.
 
 If you use this pipeline in your work, please cite the archived software:
 
-> Pradhan, S. (2026). *fmri-pipeline* (Version 1.0.2) [Computer software]. Zenodo. https://doi.org/CONCEPT_DOI
+> Pradhan, S. (2026). *fmri-pipeline* (Version 1.0.2) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.20280071
 
 The accompanying manuscript, *A Configuration-Driven Python Pipeline for Reproducible Functional Brain Network Analysis: Internal Validation on a Public fMRI Dataset*, is unpublished. Its source is in `paper.md`.
 
